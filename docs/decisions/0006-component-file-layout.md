@@ -43,7 +43,7 @@ src/features/interrogation/
 ### Import shape
 
 ```ts
-import { ChatView } from '@/features/interrogation/chat-view';
+import { ChatView } from '@/features/interrogation/chat-view'
 ```
 
 The barrel makes the import path point at the folder, not the file — companion files (tests, hooks, sub-components) can be added later without touching call sites.
@@ -51,6 +51,7 @@ The barrel makes the import path point at the folder, not the file — companion
 ### Scope
 
 Applies to:
+
 - Components under `src/features/**`
 - First-party components under `src/components/**` (i.e. anything we author)
 

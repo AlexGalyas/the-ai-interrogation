@@ -1,17 +1,17 @@
 interface TextDeltaEvent {
-  type: 'content_block_delta';
-  delta: { type: 'text_delta'; text: string };
+	type: 'content_block_delta'
+	delta: { type: 'text_delta'; text: string }
 }
 
 function isTextDeltaEvent(event: unknown): event is TextDeltaEvent {
-  if (typeof event !== 'object' || event === null) return false;
-  const candidate = event as { type?: unknown; delta?: unknown };
-  if (candidate.type !== 'content_block_delta') return false;
-  if (typeof candidate.delta !== 'object' || candidate.delta === null) {
-    return false;
-  }
-  const delta = candidate.delta as { type?: unknown; text?: unknown };
-  return delta.type === 'text_delta' && typeof delta.text === 'string';
+	if (typeof event !== 'object' || event === null) return false
+	const candidate = event as { type?: unknown; delta?: unknown }
+	if (candidate.type !== 'content_block_delta') return false
+	if (typeof candidate.delta !== 'object' || candidate.delta === null) {
+		return false
+	}
+	const delta = candidate.delta as { type?: unknown; text?: unknown }
+	return delta.type === 'text_delta' && typeof delta.text === 'string'
 }
 
 /**
@@ -27,22 +27,22 @@ function isTextDeltaEvent(event: unknown): event is TextDeltaEvent {
  * @returns A ReadableStream emitting UTF-8 encoded text chunks.
  */
 export function textStreamFromMessageStream(
-  source: AsyncIterable<unknown>,
+	source: AsyncIterable<unknown>
 ): ReadableStream<Uint8Array> {
-  const encoder = new TextEncoder();
+	const encoder = new TextEncoder()
 
-  return new ReadableStream<Uint8Array>({
-    async start(controller) {
-      try {
-        for await (const event of source) {
-          if (isTextDeltaEvent(event)) {
-            controller.enqueue(encoder.encode(event.delta.text));
-          }
-        }
-        controller.close();
-      } catch (err) {
-        controller.error(err);
-      }
-    },
-  });
+	return new ReadableStream<Uint8Array>({
+		async start(controller) {
+			try {
+				for await (const event of source) {
+					if (isTextDeltaEvent(event)) {
+						controller.enqueue(encoder.encode(event.delta.text))
+					}
+				}
+				controller.close()
+			} catch (err) {
+				controller.error(err)
+			}
+		}
+	})
 }
