@@ -3,8 +3,8 @@
 import type { Suspect } from '@/lib/game/types';
 import { useGameStore } from '@/stores/game';
 
-import { ChatView } from '@/features/interrogation/ChatView';
-import { MessageInput } from '@/features/interrogation/MessageInput';
+import { ChatView } from '@/features/interrogation/chat-view';
+import { MessageInput } from '@/features/interrogation/message-input';
 
 interface InterrogationRoomProps {
   suspect: Suspect;
