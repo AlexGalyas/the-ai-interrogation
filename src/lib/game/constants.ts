@@ -1,0 +1,1 @@
+export const MAX_QUESTIONS_PER_SUSPECT = 15;
