@@ -12,7 +12,7 @@ export interface Suspect {
   publicAlibi: string;
   hiddenTruth: string;
   lyingRules: string[];
-  crackPoint: CrackPoint;
+  crackPoint?: CrackPoint;
   personality: string;
 }
 
