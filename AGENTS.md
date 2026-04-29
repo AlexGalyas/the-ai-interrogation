@@ -149,7 +149,8 @@ test(game): cover evaluateAccusation edge cases
 | Thing | Convention | Example |
 |---|---|---|
 | Files (non-component) | `kebab-case.ts` | `build-suspect-prompt.ts` |
-| Component files | `PascalCase.tsx` | `SuspectCard.tsx` |
+| Component files | `kebab-case.tsx` inside a kebab-case folder, with an `index.ts` barrel re-exporting the component (see ADR-0006) | `chat-view/chat-view.tsx` + `chat-view/index.ts` |
+| Component identifiers | `PascalCase` (React requirement) | `ChatView`, `SuspectTopBar` |
 | Types / interfaces | `PascalCase` | `Suspect`, `CaseDefinition` |
 | Constants | `SCREAMING_SNAKE_CASE` | `MAX_QUESTIONS_PER_SUSPECT` |
 | Functions / variables | `camelCase` | `evaluateAccusation` |
