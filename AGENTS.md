@@ -11,11 +11,13 @@
 The project is a hobby / portfolio piece built in public. Scope is intentionally bounded: a polished MVP with two cases over six weekends (≈30 hours), released on itch.io and a custom domain.
 
 **Goals:**
+
 - Ship a fun, novel game experience that demonstrates prompt-engineered NPC design
 - Maintain portfolio-grade code quality (typed, linted, tested, CI-protected)
 - Document the build process publicly via X / dev blog posts
 
 **Non-goals:**
+
 - Multiplayer, accounts, monetization, persistence beyond `localStorage`
 - Mobile-native apps (responsive web only)
 - Generic "chat with AI" gameplay — the game lives or dies on the prompt-engineered crack-point mechanic
@@ -24,24 +26,25 @@ The project is a hobby / portfolio piece built in public. Scope is intentionally
 
 ## 2. Tech Stack
 
-| Layer | Choice |
-|---|---|
-| Framework | **Next.js 15** (App Router) |
-| Language | **TypeScript** (`strict: true`) |
-| Package manager | **pnpm** |
-| Styling | **Tailwind CSS v4** + **shadcn/ui** |
-| State | **Zustand** (with `persist` middleware for `localStorage`) |
-| Animations | **Motion** (`motion/react`) |
-| AI SDK | `@anthropic-ai/sdk` |
-| Default model | `claude-haiku-4-5` (re-evaluate against `claude-sonnet-4-6` in Weekend 3–4) |
-| Lint / format | ESLint (Next config + `eslint-plugin-tailwindcss`) + Prettier (`prettier-plugin-tailwindcss`) |
-| Pre-commit | Husky + lint-staged |
-| Tests (unit) | **Vitest** |
-| Tests (E2E) | **Playwright** |
-| CI | **GitHub Actions** (lint + typecheck + test on PR) |
-| Hosting | **Vercel** (auto-deploy main, preview on PR) |
+| Layer           | Choice                                                                                        |
+| --------------- | --------------------------------------------------------------------------------------------- |
+| Framework       | **Next.js 15** (App Router)                                                                   |
+| Language        | **TypeScript** (`strict: true`)                                                               |
+| Package manager | **pnpm**                                                                                      |
+| Styling         | **Tailwind CSS v4** + **shadcn/ui**                                                           |
+| State           | **Zustand** (with `persist` middleware for `localStorage`)                                    |
+| Animations      | **Motion** (`motion/react`)                                                                   |
+| AI SDK          | `@anthropic-ai/sdk`                                                                           |
+| Default model   | `claude-haiku-4-5` (re-evaluate against `claude-sonnet-4-6` in Weekend 3–4)                   |
+| Lint / format   | ESLint (Next config + `eslint-plugin-tailwindcss`) + Prettier (`prettier-plugin-tailwindcss`) |
+| Pre-commit      | Husky + lint-staged                                                                           |
+| Tests (unit)    | **Vitest**                                                                                    |
+| Tests (E2E)     | **Playwright**                                                                                |
+| CI              | **GitHub Actions** (lint + typecheck + test on PR)                                            |
+| Hosting         | **Vercel** (auto-deploy main, preview on PR)                                                  |
 
 **Hard rules:**
+
 - Never call Anthropic API from the client. All AI calls go through `src/app/api/*/route.ts`.
 - No `any`. If you genuinely need an escape hatch, use `unknown` and narrow.
 - No default exports **except** for React components and Next.js route handlers.
@@ -137,6 +140,7 @@ Format: `<type>(<scope>): <subject>`
 Types: `feat`, `fix`, `chore`, `docs`, `refactor`, `test`, `style`, `perf`, `ci`.
 
 Examples:
+
 ```
 feat(interrogation): add streaming response handler
 fix(prompt): suspect stays in character after meta-questions
@@ -146,16 +150,16 @@ test(game): cover evaluateAccusation edge cases
 
 ### 4.4 Naming
 
-| Thing | Convention | Example |
-|---|---|---|
-| Files (non-component) | `kebab-case.ts` | `build-suspect-prompt.ts` |
-| Component files | `kebab-case.tsx` inside a kebab-case folder, with an `index.ts` barrel re-exporting the component (see ADR-0006) | `chat-view/chat-view.tsx` + `chat-view/index.ts` |
-| Component identifiers | `PascalCase` (React requirement) | `ChatView`, `SuspectTopBar` |
-| Types / interfaces | `PascalCase` | `Suspect`, `CaseDefinition` |
-| Constants | `SCREAMING_SNAKE_CASE` | `MAX_QUESTIONS_PER_SUSPECT` |
-| Functions / variables | `camelCase` | `evaluateAccusation` |
-| Zustand stores (hook) | `useXxxStore` | `useGameStore` |
-| Booleans | `is*` / `has*` / `should*` | `isAccusing`, `hasConfessed` |
+| Thing                 | Convention                                                                                                       | Example                                          |
+| --------------------- | ---------------------------------------------------------------------------------------------------------------- | ------------------------------------------------ |
+| Files (non-component) | `kebab-case.ts`                                                                                                  | `build-suspect-prompt.ts`                        |
+| Component files       | `kebab-case.tsx` inside a kebab-case folder, with an `index.ts` barrel re-exporting the component (see ADR-0006) | `chat-view/chat-view.tsx` + `chat-view/index.ts` |
+| Component identifiers | `PascalCase` (React requirement)                                                                                 | `ChatView`, `SuspectTopBar`                      |
+| Types / interfaces    | `PascalCase`                                                                                                     | `Suspect`, `CaseDefinition`                      |
+| Constants             | `SCREAMING_SNAKE_CASE`                                                                                           | `MAX_QUESTIONS_PER_SUSPECT`                      |
+| Functions / variables | `camelCase`                                                                                                      | `evaluateAccusation`                             |
+| Zustand stores (hook) | `useXxxStore`                                                                                                    | `useGameStore`                                   |
+| Booleans              | `is*` / `has*` / `should*`                                                                                       | `isAccusing`, `hasConfessed`                     |
 
 ### 4.5 Imports
 
@@ -172,6 +176,7 @@ test(game): cover evaluateAccusation edge cases
 ### 4.7 Definition of Done
 
 A feature is **done** when all of the following are true:
+
 1. Code is merged into `main` via a green PR.
 2. `pnpm typecheck`, `pnpm lint`, `pnpm test` all pass.
 3. New business logic has a Vitest unit test.
@@ -208,6 +213,7 @@ pnpm start                       # serve production build locally
 ## 6. Environment variables
 
 Required:
+
 - `ANTHROPIC_API_KEY` — server-side only. Never exposed to client.
 
 `.env.local` is gitignored. `.env.example` lives in the repo as a template. Production values are managed in Vercel Environment Variables.

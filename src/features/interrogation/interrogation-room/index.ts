@@ -1,1 +1,1 @@
-export { InterrogationRoom } from './interrogation-room';
+export { InterrogationRoom } from './interrogation-room'

@@ -1,1 +1,1 @@
-export { SuspectTopBar } from './suspect-top-bar';
+export { SuspectTopBar } from './suspect-top-bar'

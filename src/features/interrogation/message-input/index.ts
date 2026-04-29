@@ -1,1 +1,1 @@
-export { MessageInput } from './message-input';
+export { MessageInput } from './message-input'

@@ -1,6 +1,6 @@
-import Anthropic from '@anthropic-ai/sdk';
+import Anthropic from '@anthropic-ai/sdk'
 
-let cachedClient: Anthropic | null = null;
+let cachedClient: Anthropic | null = null
 
 /**
  * Returns a singleton Anthropic client constructed from the server-side
@@ -12,13 +12,13 @@ let cachedClient: Anthropic | null = null;
  * @throws Error when `ANTHROPIC_API_KEY` is missing or empty.
  */
 export function getAnthropicClient(): Anthropic {
-  if (cachedClient) return cachedClient;
+	if (cachedClient) return cachedClient
 
-  const apiKey = process.env.ANTHROPIC_API_KEY;
-  if (!apiKey) {
-    throw new Error('ANTHROPIC_API_KEY is not set');
-  }
+	const apiKey = process.env.ANTHROPIC_API_KEY
+	if (!apiKey) {
+		throw new Error('ANTHROPIC_API_KEY is not set')
+	}
 
-  cachedClient = new Anthropic({ apiKey });
-  return cachedClient;
+	cachedClient = new Anthropic({ apiKey })
+	return cachedClient
 }
