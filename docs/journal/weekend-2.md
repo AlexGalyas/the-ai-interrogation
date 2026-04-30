@@ -4,7 +4,8 @@
 
 ## What I built
 
-- _(stub)_
+- Step 4 — Briefing screen + GameRoot wiring. New `src/features/briefing/{briefing-screen,suspect-card}` components and `src/features/game-root/game-root` client component that derives the active screen from store state. `app/page.tsx` is now a thin server component that just renders `<GameRoot kase={case01} />`. Investigation UI is wrapped as-is for now; outcome screen is a placeholder until Step 7.
+- Expanded `case-01-soho-gallery.premise` from one meta-flavoured sentence ("Weekend 1 implements only Marcus") to two player-facing paragraphs that set the scene without spoilers, so the briefing has enough copy to read.
 
 ## What was hard
 
@@ -21,3 +22,4 @@
 ## Spec deviations
 
 - ADR numbering shifted by +1 due to a pre-existing ADR-0006 (component-file-layout) committed during Weekend 1. Spec was patched in this same commit.
+- Step 4 expanded `case.premise` inline (per spec §5 contingency in the step-4 brief) since the existing one-liner wasn't long enough for a briefing screen.
