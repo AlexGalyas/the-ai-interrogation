@@ -29,5 +29,13 @@ export const caseSohoGallery: Case = {
 	title: 'The Gallery Closing',
 	premise:
 		'A Soho gallerist, Helena Voss, was found dead in her gallery on Tuesday night. Three suspects are in frame: a struggling artist she represented (Marcus), an art dealer, and Helena\u2019s lover. Weekend 1 implements only Marcus.',
-	suspects: [marcus]
+	suspects: [marcus],
+	solution: {
+		murdererId: 'marcus', // PROVISIONAL — see ADR-0009. Changes to 'henry' in Weekend 3.
+		requiredEvidence: ['car', 'gallery', '21:30'],
+		explanation:
+			'Marcus drove to the gallery on Tuesday after Helena told him she was dropping him. ' +
+			'Their argument turned violent. He left around 21:35, panicked rather than calling ' +
+			'the police. The witness placing his car near the gallery at 21:30 was the loose thread.'
+	}
 }
