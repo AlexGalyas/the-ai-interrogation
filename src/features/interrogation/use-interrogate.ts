@@ -1,5 +1,7 @@
 'use client'
 
+import { useState } from 'react'
+
 import { useGameStore } from '@/stores/game'
 
 const API_ERROR_MESSAGE = 'The suspect is silent... try again.'
@@ -10,15 +12,24 @@ interface ApiMessage {
 	content: string
 }
 
-function snapshotMessages(): ApiMessage[] {
-	return useGameStore.getState().messages.map((m) => ({
-		role: m.role,
-		content: m.content
-	}))
+function snapshotMessages(suspectId: string): ApiMessage[] {
+	const state = useGameStore.getState()
+	const progress = state.progressByCase[state.currentCaseId]
+	const messages = progress?.messagesBySuspect[suspectId] ?? []
+	return messages
+		.filter((m) => m.content.length > 0)
+		.map((m) => ({ role: m.role, content: m.content }))
+}
+
+function readIsStreaming(suspectId: string): boolean {
+	const state = useGameStore.getState()
+	const progress = state.progressByCase[state.currentCaseId]
+	return progress?.isStreamingBySuspect[suspectId] ?? false
 }
 
 async function streamInto(
 	response: Response,
+	suspectId: string,
 	assistantId: string
 ): Promise<{ receivedAny: boolean; error: unknown }> {
 	if (!response.body) {
@@ -38,14 +49,14 @@ async function streamInto(
 				const text = decoder.decode(value, { stream: true })
 				if (text) {
 					receivedAny = true
-					appendToAssistantMessage(assistantId, text)
+					appendToAssistantMessage(suspectId, assistantId, text)
 				}
 			}
 		}
 		const tail = decoder.decode()
 		if (tail) {
 			receivedAny = true
-			appendToAssistantMessage(assistantId, tail)
+			appendToAssistantMessage(suspectId, assistantId, tail)
 		}
 		return { receivedAny, error: null }
 	} catch (err) {
@@ -53,70 +64,90 @@ async function streamInto(
 	}
 }
 
-async function runRequest(suspectId: string, messages: ApiMessage[]): Promise<void> {
-	const store = useGameStore.getState()
-	const assistantId = store.startAssistantMessage()
-
-	let response: Response
-	try {
-		response = await fetch('/api/interrogate', {
-			method: 'POST',
-			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({ suspectId, messages })
-		})
-	} catch {
-		useGameStore.getState().setError(API_ERROR_MESSAGE)
-		return
-	}
-
-	if (!response.ok) {
-		useGameStore.getState().setError(API_ERROR_MESSAGE)
-		return
-	}
-
-	const { receivedAny, error } = await streamInto(response, assistantId)
-
-	if (!error) {
-		useGameStore.getState().finishStreaming()
-		return
-	}
-
-	if (receivedAny) {
-		useGameStore.getState().appendToAssistantMessage(assistantId, CONNECTION_LOST_SUFFIX)
-		useGameStore.getState().finishStreaming()
-	} else {
-		useGameStore.getState().setError(API_ERROR_MESSAGE)
-	}
-}
-
 interface UseInterrogateApi {
 	ask: (content: string) => Promise<void>
 	retry: () => Promise<void>
+	error: string | null
+	isStreaming: boolean
 }
 
 /**
- * Owns the fetch-and-stream side effect for the interrogation flow.
+ * Owns the fetch-and-stream side effect for one suspect's interrogation.
  *
  * `ask(content)` appends the user message to the store, snapshots the full
- * conversation, then streams the model reply into a freshly-created assistant
- * message slot.
+ * conversation for this suspect, then streams the model reply into a
+ * freshly-created assistant message slot.
  *
- * `retry()` is for the "API error" path — it drops the empty assistant slot,
- * clears the error, and re-fires the request with the existing history (no
- * new user message).
+ * `retry()` is for the "API error" path — it clears the local error and
+ * re-fires the request with the existing history (no new user message).
+ *
+ * Streaming state is tracked per-suspect inside the store; the local `error`
+ * state is not persisted because errors are transient and meaningless across
+ * reloads.
  */
 export function useInterrogate(suspectId: string): UseInterrogateApi {
+	const [error, setError] = useState<string | null>(null)
+	const isStreaming = useGameStore((state) => {
+		const progress = state.progressByCase[state.currentCaseId]
+		return progress?.isStreamingBySuspect[suspectId] ?? false
+	})
+
+	const runRequest = async (messages: ApiMessage[]): Promise<void> => {
+		const assistantId = useGameStore.getState().startAssistantMessage(suspectId)
+
+		let response: Response
+		try {
+			response = await fetch('/api/interrogate', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ suspectId, messages })
+			})
+		} catch {
+			useGameStore.getState().finishStreaming(suspectId)
+			setError(API_ERROR_MESSAGE)
+			return
+		}
+
+		if (!response.ok) {
+			useGameStore.getState().finishStreaming(suspectId)
+			setError(API_ERROR_MESSAGE)
+			return
+		}
+
+		const { receivedAny, error: streamError } = await streamInto(
+			response,
+			suspectId,
+			assistantId
+		)
+
+		if (!streamError) {
+			useGameStore.getState().finishStreaming(suspectId)
+			return
+		}
+
+		if (receivedAny) {
+			useGameStore
+				.getState()
+				.appendToAssistantMessage(suspectId, assistantId, CONNECTION_LOST_SUFFIX)
+			useGameStore.getState().finishStreaming(suspectId)
+		} else {
+			useGameStore.getState().finishStreaming(suspectId)
+			setError(API_ERROR_MESSAGE)
+		}
+	}
+
 	const ask = async (content: string) => {
-		if (useGameStore.getState().isStreaming) return
-		useGameStore.getState().appendUserMessage(content)
-		await runRequest(suspectId, snapshotMessages())
+		if (readIsStreaming(suspectId)) return
+		setError(null)
+		useGameStore.getState().appendUserMessage(suspectId, content)
+		await runRequest(snapshotMessages(suspectId))
 	}
 
 	const retry = async () => {
-		if (useGameStore.getState().isStreaming) return
-		useGameStore.getState().retry()
-		await runRequest(suspectId, snapshotMessages())
+		if (readIsStreaming(suspectId)) return
+		setError(null)
+		await runRequest(snapshotMessages(suspectId))
 	}
 
-	return { ask, retry }
+	return { ask, retry, error, isStreaming }
 }

@@ -6,8 +6,11 @@ import { cn } from '@/lib/utils'
 import { useGameStore, type Message } from '@/stores/game'
 
 interface ChatViewProps {
+	error: string | null
 	onRetry: () => void
 }
+
+const EMPTY_MESSAGES: Message[] = []
 
 function isPendingAssistant(
 	message: Message,
@@ -20,10 +23,17 @@ function isPendingAssistant(
 	)
 }
 
-export function ChatView({ onRetry }: ChatViewProps) {
-	const messages = useGameStore((state) => state.messages)
-	const isStreaming = useGameStore((state) => state.isStreaming)
-	const error = useGameStore((state) => state.error)
+export function ChatView({ error, onRetry }: ChatViewProps) {
+	const messages =
+		useGameStore((state) => {
+			const progress = state.progressByCase[state.currentCaseId]
+			return progress?.messagesBySuspect[progress.activeSuspectId]
+		}) ?? EMPTY_MESSAGES
+	const isStreaming = useGameStore((state) => {
+		const progress = state.progressByCase[state.currentCaseId]
+		if (!progress) return false
+		return progress.isStreamingBySuspect[progress.activeSuspectId] ?? false
+	})
 
 	const isEmpty = messages.length === 0 && !error
 
