@@ -8,7 +8,7 @@ export default function Home() {
 	return (
 		<div className="flex min-h-screen flex-col">
 			<SuspectTopBar suspect={marcus} />
-			<InterrogationRoom suspect={marcus} />
+			<InterrogationRoom suspect={marcus} caseId={caseSohoGallery.id} />
 		</div>
 	)
 }

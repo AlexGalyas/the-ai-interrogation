@@ -1,101 +1,174 @@
 import { beforeEach, describe, expect, it } from 'vitest'
 
-import { useGameStore } from '@/stores/game'
+import { caseSohoGallery } from '@/content/cases/case-01-soho-gallery'
+import { STORAGE_KEY, deriveScreen, useGameStore } from '@/stores/game'
 
-const initialState = useGameStore.getState()
+const CASE_ID = caseSohoGallery.id
+const MARCUS_ID = caseSohoGallery.suspects[0].id
 
 beforeEach(() => {
-	useGameStore.setState(
-		{
-			...initialState,
-			messages: [],
-			isStreaming: false,
-			error: null
-		},
-		true
-	)
+	useGameStore.setState({
+		currentCaseId: CASE_ID,
+		progressByCase: {}
+	})
+	if (typeof localStorage !== 'undefined') {
+		localStorage.removeItem(STORAGE_KEY)
+	}
 })
 
 describe('useGameStore', () => {
-	it('starts with empty messages, not streaming, no error', () => {
+	it('starts with the default case id and no per-case progress', () => {
 		const state = useGameStore.getState()
-		expect(state.messages).toEqual([])
-		expect(state.isStreaming).toBe(false)
-		expect(state.error).toBeNull()
+		expect(state.currentCaseId).toBe(CASE_ID)
+		expect(state.progressByCase).toEqual({})
 	})
 
-	it('appendUserMessage adds a user message with generated id', () => {
-		useGameStore.getState().appendUserMessage('Where were you Tuesday?')
-		const { messages } = useGameStore.getState()
-		expect(messages).toHaveLength(1)
-		expect(messages[0]).toMatchObject({
-			role: 'user',
-			content: 'Where were you Tuesday?'
-		})
-		expect(typeof messages[0].id).toBe('string')
-		expect(messages[0].id.length).toBeGreaterThan(0)
+	it('getCurrentProgress throws before beginInvestigation', () => {
+		expect(() => useGameStore.getState().getCurrentProgress()).toThrow(/No progress/)
 	})
 
-	it('startAssistantMessage appends an empty assistant message and flips isStreaming on', () => {
-		const id = useGameStore.getState().startAssistantMessage()
-		const { messages, isStreaming } = useGameStore.getState()
+	it('beginInvestigation creates blank progress with hasBegun=true and the first suspect active', () => {
+		useGameStore.getState().beginInvestigation(CASE_ID)
+		const progress = useGameStore.getState().getCurrentProgress()
+		expect(progress.hasBegun).toBe(true)
+		expect(progress.activeSuspectId).toBe(MARCUS_ID)
+		expect(progress.accusation).toBeNull()
+		expect(progress.messagesBySuspect).toEqual({})
+		expect(progress.isStreamingBySuspect).toEqual({})
+	})
+
+	it('beginInvestigation preserves existing progress on subsequent calls', () => {
+		const store = useGameStore.getState()
+		store.beginInvestigation(CASE_ID)
+		store.appendUserMessage(MARCUS_ID, 'hello')
+		store.beginInvestigation(CASE_ID)
+		const progress = useGameStore.getState().getCurrentProgress()
+		expect(progress.messagesBySuspect[MARCUS_ID]).toHaveLength(1)
+		expect(progress.hasBegun).toBe(true)
+	})
+
+	it('appendUserMessage appends to the right suspect', () => {
+		const store = useGameStore.getState()
+		store.beginInvestigation(CASE_ID)
+		store.appendUserMessage(MARCUS_ID, 'Where were you Tuesday?')
+		const messages = useGameStore.getState().getActiveMessages()
 		expect(messages).toHaveLength(1)
-		expect(messages[0]).toEqual({ id, role: 'assistant', content: '' })
-		expect(isStreaming).toBe(true)
+		expect(messages[0]).toMatchObject({ role: 'user', content: 'Where were you Tuesday?' })
+	})
+
+	it('startAssistantMessage adds an empty assistant message and flips per-suspect streaming on', () => {
+		const store = useGameStore.getState()
+		store.beginInvestigation(CASE_ID)
+		const id = store.startAssistantMessage(MARCUS_ID)
+		const progress = useGameStore.getState().getCurrentProgress()
+		expect(progress.messagesBySuspect[MARCUS_ID]).toEqual([
+			{ id, role: 'assistant', content: '' }
+		])
+		expect(progress.isStreamingBySuspect[MARCUS_ID]).toBe(true)
 	})
 
 	it('appendToAssistantMessage appends only to the matching message', () => {
-		const { appendUserMessage, startAssistantMessage, appendToAssistantMessage } =
-			useGameStore.getState()
-		appendUserMessage('hi')
-		const id = startAssistantMessage()
-		appendToAssistantMessage(id, 'Hel')
-		appendToAssistantMessage(id, 'lo.')
-
-		const { messages } = useGameStore.getState()
+		const store = useGameStore.getState()
+		store.beginInvestigation(CASE_ID)
+		store.appendUserMessage(MARCUS_ID, 'hi')
+		const id = store.startAssistantMessage(MARCUS_ID)
+		store.appendToAssistantMessage(MARCUS_ID, id, 'Hel')
+		store.appendToAssistantMessage(MARCUS_ID, id, 'lo.')
+		const messages = useGameStore.getState().getActiveMessages()
 		expect(messages.map((m) => m.content)).toEqual(['hi', 'Hello.'])
 	})
 
-	it('finishStreaming flips isStreaming off', () => {
-		useGameStore.getState().startAssistantMessage()
-		useGameStore.getState().finishStreaming()
-		expect(useGameStore.getState().isStreaming).toBe(false)
+	it('finishStreaming flips per-suspect streaming off', () => {
+		const store = useGameStore.getState()
+		store.beginInvestigation(CASE_ID)
+		store.startAssistantMessage(MARCUS_ID)
+		store.finishStreaming(MARCUS_ID)
+		const progress = useGameStore.getState().getCurrentProgress()
+		expect(progress.isStreamingBySuspect[MARCUS_ID]).toBe(false)
 	})
 
-	it('setError stores the error and stops streaming', () => {
-		useGameStore.getState().startAssistantMessage()
-		useGameStore.getState().setError('Network down')
-		const state = useGameStore.getState()
-		expect(state.error).toBe('Network down')
-		expect(state.isStreaming).toBe(false)
+	it('submitAccusation persists the accusation with timestamp', () => {
+		const store = useGameStore.getState()
+		store.beginInvestigation(CASE_ID)
+		store.submitAccusation(
+			{ suspectId: MARCUS_ID, evidence: 'his car at the gallery at 21:30' },
+			{
+				isCorrect: true,
+				matchedEvidence: ['car', 'gallery', '21:30'],
+				missingEvidence: []
+			}
+		)
+		const progress = useGameStore.getState().getCurrentProgress()
+		expect(progress.accusation).not.toBeNull()
+		expect(progress.accusation?.suspectId).toBe(MARCUS_ID)
+		expect(progress.accusation?.result.isCorrect).toBe(true)
+		expect(typeof progress.accusation?.submittedAt).toBe('string')
 	})
 
-	it('retry clears the error and removes a trailing empty assistant message', () => {
-		const { appendUserMessage, startAssistantMessage, setError, retry } =
-			useGameStore.getState()
-		appendUserMessage('question')
-		startAssistantMessage()
-		setError('boom')
+	it('resetCurrentCase wipes the current case progress and unsets hasBegun', () => {
+		const store = useGameStore.getState()
+		store.beginInvestigation(CASE_ID)
+		store.appendUserMessage(MARCUS_ID, 'hi')
+		store.submitAccusation(
+			{ suspectId: MARCUS_ID, evidence: 'x' },
+			{
+				isCorrect: false,
+				matchedEvidence: [],
+				missingEvidence: ['car', 'gallery', '21:30']
+			}
+		)
+		store.resetCurrentCase()
+		const progress = useGameStore.getState().getCurrentProgress()
+		expect(progress.hasBegun).toBe(false)
+		expect(progress.accusation).toBeNull()
+		expect(progress.messagesBySuspect).toEqual({})
+		expect(progress.activeSuspectId).toBe(MARCUS_ID)
+	})
+})
 
-		retry()
-
-		const state = useGameStore.getState()
-		expect(state.error).toBeNull()
-		expect(state.messages).toHaveLength(1)
-		expect(state.messages[0]).toMatchObject({ role: 'user', content: 'question' })
+describe('deriveScreen', () => {
+	it('returns briefing when progress is undefined', () => {
+		expect(deriveScreen(undefined)).toBe('briefing')
 	})
 
-	it('retry preserves a non-empty trailing assistant message', () => {
-		const { appendUserMessage, startAssistantMessage, appendToAssistantMessage, retry } =
-			useGameStore.getState()
-		appendUserMessage('question')
-		const id = startAssistantMessage()
-		appendToAssistantMessage(id, 'partial reply')
+	it('returns briefing when not begun', () => {
+		expect(
+			deriveScreen({
+				hasBegun: false,
+				messagesBySuspect: {},
+				isStreamingBySuspect: {},
+				activeSuspectId: MARCUS_ID,
+				accusation: null
+			})
+		).toBe('briefing')
+	})
 
-		retry()
+	it('returns investigation when begun without accusation', () => {
+		expect(
+			deriveScreen({
+				hasBegun: true,
+				messagesBySuspect: {},
+				isStreamingBySuspect: {},
+				activeSuspectId: MARCUS_ID,
+				accusation: null
+			})
+		).toBe('investigation')
+	})
 
-		const { messages } = useGameStore.getState()
-		expect(messages).toHaveLength(2)
-		expect(messages[1].content).toBe('partial reply')
+	it('returns outcome once an accusation is submitted', () => {
+		expect(
+			deriveScreen({
+				hasBegun: true,
+				messagesBySuspect: {},
+				isStreamingBySuspect: {},
+				activeSuspectId: MARCUS_ID,
+				accusation: {
+					suspectId: MARCUS_ID,
+					evidence: 'x',
+					result: { isCorrect: false, matchedEvidence: [], missingEvidence: [] },
+					submittedAt: '2026-04-30T00:00:00Z'
+				}
+			})
+		).toBe('outcome')
 	})
 })
