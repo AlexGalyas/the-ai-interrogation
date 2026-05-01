@@ -8,6 +8,7 @@
 - Expanded `case-01-soho-gallery.premise` from one meta-flavoured sentence ("Weekend 1 implements only Marcus") to two player-facing paragraphs that set the scene without spoilers, so the briefing has enough copy to read.
 - Step 5 — Investigation refactor. New `SuspectTabs` (custom tab bar — controlled, with active tab showing one-liner under the name; built with plain Tailwind because shadcn Tabs wasn't installed and our needs are simple/controlled), `AccuseButton` (floating bottom-right) under `src/features/accusation/`, and `InvestigationScreen` that reads `activeSuspectId` from the store and composes tabs + existing `InterrogationRoom` + accuse button. `GameRoot`'s investigation branch now renders `<InvestigationScreen>`; the accuse callback is a `console.log` placeholder until Step 6 wires the modal.
 - Step 6 — Accusation flow. New `AccusationModal` (shadcn Dialog) and `SuspectPicker` under `src/features/accusation/`. The Accuse button now opens the modal; submit calls `evaluateAccusation` and persists the result via `submitAccusation`, after which `deriveScreen` flips to the outcome placeholder. Modal local state (selected suspect + evidence textarea) resets on each open; submit is gated on a chosen suspect plus 10+ non-whitespace evidence chars.
+- Step 7 — Outcome screen completes the game loop. New `src/features/outcome/outcome-screen` with Win / Lose variants (no truth reveal on Lose, per ADR-0010) and a "New investigation" button that calls `resetCurrentCase`. Added `getQuestionsAskedCount` selector to `useGameStore` (flattens `messagesBySuspect`, filters role === 'user'). `GameRoot` now renders `<OutcomeScreen>` in place of the placeholder; after reset, `deriveScreen` returns `'briefing'` automatically.
 
 ## What was hard
 
@@ -15,7 +16,7 @@
 
 ## Interesting moments worth showing on video
 
-- _(stub)_
+- First full playthrough — Briefing → cracked Marcus → correct accusation → Win screen. Worth a screen recording for the YouTube cut later.
 
 ## Mistakes
 

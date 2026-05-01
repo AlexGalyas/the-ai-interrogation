@@ -41,6 +41,7 @@ export interface GameState {
 
 	getCurrentProgress: () => CaseProgress
 	getActiveMessages: () => Message[]
+	getQuestionsAskedCount: () => number
 
 	beginInvestigation: (caseId: string) => void
 	setActiveSuspect: (suspectId: string) => void
@@ -118,6 +119,15 @@ export const useGameStore = create<GameState>()(
 			getActiveMessages: () => {
 				const progress = get().getCurrentProgress()
 				return progress.messagesBySuspect[progress.activeSuspectId] ?? []
+			},
+
+			getQuestionsAskedCount: () => {
+				const { currentCaseId, progressByCase } = get()
+				const progress = progressByCase[currentCaseId]
+				if (!progress) return 0
+				return Object.values(progress.messagesBySuspect)
+					.flat()
+					.filter((m) => m.role === 'user').length
 			},
 
 			beginInvestigation: (caseId) => {
