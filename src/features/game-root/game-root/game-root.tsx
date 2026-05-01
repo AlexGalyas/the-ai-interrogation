@@ -1,7 +1,8 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 
+import { AccusationModal } from '@/features/accusation/accusation-modal'
 import { BriefingScreen } from '@/features/briefing/briefing-screen'
 import { InvestigationScreen } from '@/features/interrogation/investigation-screen'
 import type { Case } from '@/lib/game/types'
@@ -15,27 +16,33 @@ export function GameRoot({ kase }: GameRootProps) {
 	const beginInvestigation = useGameStore((state) => state.beginInvestigation)
 	const progress = useGameStore((state) => state.progressByCase[kase.id])
 	const screen = deriveScreen(progress)
+	const [accusationOpen, setAccusationOpen] = useState(false)
 
 	useEffect(() => {
 		void useGameStore.persist.rehydrate()
 	}, [])
 
+	let screenNode
 	if (screen === 'briefing') {
-		return (
+		screenNode = (
 			<BriefingScreen kase={kase} onBegin={() => beginInvestigation(kase.id)} />
 		)
-	}
-
-	if (screen === 'investigation') {
-		return (
-			<InvestigationScreen
-				kase={kase}
-				onAccuse={() => {
-					console.log('accuse')
-				}}
-			/>
+	} else if (screen === 'investigation') {
+		screenNode = (
+			<InvestigationScreen kase={kase} onAccuse={() => setAccusationOpen(true)} />
 		)
+	} else {
+		screenNode = <div>Outcome screen — coming soon</div>
 	}
 
-	return <div>Outcome screen — coming soon</div>
+	return (
+		<>
+			{screenNode}
+			<AccusationModal
+				kase={kase}
+				open={accusationOpen}
+				onOpenChange={setAccusationOpen}
+			/>
+		</>
+	)
 }
