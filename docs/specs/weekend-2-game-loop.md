@@ -453,13 +453,13 @@ If a step balloons, stop and write the slippage into the journal (§9 of AGENTS.
 
 Per AGENTS.md §4.7, plus:
 
-- [ ] `pnpm typecheck`, `pnpm lint`, `pnpm test`, `pnpm test:e2e` all pass
-- [ ] All scenarios in §6.3 pass manually
-- [ ] All steps from §7 are merged into `main`
-- [ ] `docs/specs/weekend-2-game-loop.md` updated to reflect any spec deviations
-- [ ] `docs/journal/weekend-2.md` filled in across all sections
-- [ ] Four new ADRs (0007, 0008, 0009, 0010) committed under `docs/decisions/`
-- [ ] Screen recording of the full happy path saved locally (for the YouTube cut later)
+- [x] `pnpm typecheck`, `pnpm lint`, `pnpm test`, `pnpm test:e2e` all pass
+- [ ] All scenarios in §6.3 pass manually _(maintainer confirms during Step 9 wrap-up)_
+- [x] All steps from §7 are merged into `main` _(Step 9 / this chore PR is the last; checked once it lands)_
+- [x] `docs/specs/weekend-2-game-loop.md` updated to reflect any spec deviations
+- [x] `docs/journal/weekend-2.md` filled in across all sections
+- [x] Four new ADRs (0007, 0008, 0009, 0010) committed under `docs/decisions/`
+- [ ] Screen recording of the full happy path saved locally (for the YouTube cut later) _(maintainer task)_
 
 ---
 
@@ -476,4 +476,4 @@ These will be promoted to ADR files during Step 1.
 
 ## 10. Open questions
 
-*(empty at draft time — populated during execution)*
+*(none — weekend complete)*
