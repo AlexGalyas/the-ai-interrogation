@@ -1,7 +1,8 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 
+import { AccusationModal } from '@/features/accusation/accusation-modal'
 import { BriefingScreen } from '@/features/briefing/briefing-screen'
 import { InvestigationScreen } from '@/features/interrogation/investigation-screen'
 import { OutcomeScreen } from '@/features/outcome/outcome-screen'
@@ -17,29 +18,35 @@ export function GameRoot({ kase }: GameRootProps) {
 	const resetCurrentCase = useGameStore((state) => state.resetCurrentCase)
 	const progress = useGameStore((state) => state.progressByCase[kase.id])
 	const screen = deriveScreen(progress)
+	const [accusationOpen, setAccusationOpen] = useState(false)
 
 	useEffect(() => {
 		void useGameStore.persist.rehydrate()
 	}, [])
 
+	let screenNode
 	if (screen === 'briefing') {
-		return (
+		screenNode = (
 			<BriefingScreen kase={kase} onBegin={() => beginInvestigation(kase.id)} />
 		)
-	}
-
-	if (screen === 'investigation') {
-		return (
-			<InvestigationScreen
-				kase={kase}
-				onAccuse={() => {
-					console.log('accuse')
-				}}
-			/>
+	} else if (screen === 'investigation') {
+		screenNode = (
+			<InvestigationScreen kase={kase} onAccuse={() => setAccusationOpen(true)} />
+		)
+	} else {
+		screenNode = (
+			<OutcomeScreen kase={kase} onNewInvestigation={() => resetCurrentCase()} />
 		)
 	}
 
 	return (
-		<OutcomeScreen kase={kase} onNewInvestigation={() => resetCurrentCase()} />
+		<>
+			{screenNode}
+			<AccusationModal
+				kase={kase}
+				open={accusationOpen}
+				onOpenChange={setAccusationOpen}
+			/>
+		</>
 	)
 }
