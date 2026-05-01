@@ -13,6 +13,7 @@ Next.js 15 (App Router) · TypeScript (strict) · Tailwind CSS v4 · shadcn/ui �
 ```bash
 pnpm install
 cp .env.example .env.local       # then fill ANTHROPIC_API_KEY
+pnpm exec playwright install chromium   # one-time, required for `pnpm test:e2e`
 pnpm dev
 ```
 

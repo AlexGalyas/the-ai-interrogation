@@ -9,10 +9,11 @@
 - Step 5 — Investigation refactor. New `SuspectTabs` (custom tab bar — controlled, with active tab showing one-liner under the name; built with plain Tailwind because shadcn Tabs wasn't installed and our needs are simple/controlled), `AccuseButton` (floating bottom-right) under `src/features/accusation/`, and `InvestigationScreen` that reads `activeSuspectId` from the store and composes tabs + existing `InterrogationRoom` + accuse button. `GameRoot`'s investigation branch now renders `<InvestigationScreen>`; the accuse callback is a `console.log` placeholder until Step 6 wires the modal.
 - Step 6 — Accusation flow. New `AccusationModal` (shadcn Dialog) and `SuspectPicker` under `src/features/accusation/`. The Accuse button now opens the modal; submit calls `evaluateAccusation` and persists the result via `submitAccusation`, after which `deriveScreen` flips to the outcome placeholder. Modal local state (selected suspect + evidence textarea) resets on each open; submit is gated on a chosen suspect plus 10+ non-whitespace evidence chars.
 - Step 7 — Outcome screen completes the game loop. New `src/features/outcome/outcome-screen` with Win / Lose variants (no truth reveal on Lose, per ADR-0010) and a "New investigation" button that calls `resetCurrentCase`. Added `getQuestionsAskedCount` selector to `useGameStore` (flattens `messagesBySuspect`, filters role === 'user'). `GameRoot` now renders `<OutcomeScreen>` in place of the placeholder; after reset, `deriveScreen` returns `'briefing'` automatically.
+- Step 8 — Playwright happy-path E2E. New `playwright.config.ts` (chromium-only, list reporter, dev-server auto-start) and `tests/e2e/happy-path.spec.ts` covering Briefing → Investigation → streamed reply → Accusation modal → Win → reset. `/api/interrogate` is mocked at the network layer with a fixed text body so the test runs without an Anthropic key.
 
 ## What was hard
 
-- _(stub)_
+- Playwright `route.fulfill` doesn't accept a `ReadableStream` body — the type is `string | Buffer` only. Tried casting a custom stream first (per the spec example), then dropped it: a single-string body is delivered to the client as one or two chunks at the TCP layer, and the existing `streamInto` reader handles that identically to a real stream. The happy path doesn't need to assert token-by-token rendering, so the simpler mock is sufficient.
 
 ## Interesting moments worth showing on video
 
