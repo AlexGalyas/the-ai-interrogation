@@ -19,11 +19,18 @@
 
 - First full playthrough — Briefing → cracked Marcus → correct accusation → Win screen. Worth a screen recording for the YouTube cut later.
 
-## Mistakes
+## Mistakes / things I'd do differently
 
-- _(stub)_
+- (none of note)
 
 ## Spec deviations
 
 - ADR numbering shifted by +1 due to a pre-existing ADR-0006 (component-file-layout) committed during Weekend 1. Spec was patched in this same commit.
 - Step 4 expanded `case.premise` inline (per spec §5 contingency in the step-4 brief) since the existing one-liner wasn't long enough for a briefing screen.
+- Step 8 added incidental plumbing not described in the spec: `vitest.config.ts` excludes `tests/e2e/**` so Vitest stops trying to load the Playwright spec; `.gitignore` ignores `playwright-report/`, `test-results/`, `playwright/.cache/`; README quick-start documents the one-time `pnpm exec playwright install chromium`. Considered too small to amend §2.1; logging here for traceability.
+
+---
+
+Total time: ~5h
+
+After this PR merges, the maintainer will tag the commit on main as `weekend-2`.
