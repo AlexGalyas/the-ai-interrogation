@@ -3,8 +3,7 @@
 import { useEffect } from 'react'
 
 import { BriefingScreen } from '@/features/briefing/briefing-screen'
-import { InterrogationRoom } from '@/features/interrogation/interrogation-room'
-import { SuspectTopBar } from '@/features/interrogation/suspect-top-bar'
+import { InvestigationScreen } from '@/features/interrogation/investigation-screen'
 import type { Case } from '@/lib/game/types'
 import { deriveScreen, useGameStore } from '@/stores/game'
 
@@ -28,17 +27,13 @@ export function GameRoot({ kase }: GameRootProps) {
 	}
 
 	if (screen === 'investigation') {
-		const activeSuspectId = progress?.activeSuspectId ?? kase.suspects[0]?.id
-		const activeSuspect =
-			kase.suspects.find((s) => s.id === activeSuspectId) ?? kase.suspects[0]
-		if (!activeSuspect) {
-			throw new Error(`Case ${kase.id} has no suspects.`)
-		}
 		return (
-			<div className="flex min-h-screen flex-col">
-				<SuspectTopBar suspect={activeSuspect} />
-				<InterrogationRoom suspect={activeSuspect} caseId={kase.id} />
-			</div>
+			<InvestigationScreen
+				kase={kase}
+				onAccuse={() => {
+					console.log('accuse')
+				}}
+			/>
 		)
 	}
 
