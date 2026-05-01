@@ -4,6 +4,7 @@ import { useEffect } from 'react'
 
 import { BriefingScreen } from '@/features/briefing/briefing-screen'
 import { InvestigationScreen } from '@/features/interrogation/investigation-screen'
+import { OutcomeScreen } from '@/features/outcome/outcome-screen'
 import type { Case } from '@/lib/game/types'
 import { deriveScreen, useGameStore } from '@/stores/game'
 
@@ -13,6 +14,7 @@ interface GameRootProps {
 
 export function GameRoot({ kase }: GameRootProps) {
 	const beginInvestigation = useGameStore((state) => state.beginInvestigation)
+	const resetCurrentCase = useGameStore((state) => state.resetCurrentCase)
 	const progress = useGameStore((state) => state.progressByCase[kase.id])
 	const screen = deriveScreen(progress)
 
@@ -37,5 +39,7 @@ export function GameRoot({ kase }: GameRootProps) {
 		)
 	}
 
-	return <div>Outcome screen — coming soon</div>
+	return (
+		<OutcomeScreen kase={kase} onNewInvestigation={() => resetCurrentCase()} />
+	)
 }

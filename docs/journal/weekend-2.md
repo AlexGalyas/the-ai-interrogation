@@ -7,6 +7,7 @@
 - Step 4 — Briefing screen + GameRoot wiring. New `src/features/briefing/{briefing-screen,suspect-card}` components and `src/features/game-root/game-root` client component that derives the active screen from store state. `app/page.tsx` is now a thin server component that just renders `<GameRoot kase={case01} />`. Investigation UI is wrapped as-is for now; outcome screen is a placeholder until Step 7.
 - Expanded `case-01-soho-gallery.premise` from one meta-flavoured sentence ("Weekend 1 implements only Marcus") to two player-facing paragraphs that set the scene without spoilers, so the briefing has enough copy to read.
 - Step 5 — Investigation refactor. New `SuspectTabs` (custom tab bar — controlled, with active tab showing one-liner under the name; built with plain Tailwind because shadcn Tabs wasn't installed and our needs are simple/controlled), `AccuseButton` (floating bottom-right) under `src/features/accusation/`, and `InvestigationScreen` that reads `activeSuspectId` from the store and composes tabs + existing `InterrogationRoom` + accuse button. `GameRoot`'s investigation branch now renders `<InvestigationScreen>`; the accuse callback is a `console.log` placeholder until Step 6 wires the modal.
+- Step 7 — Outcome screen completes the game loop. New `src/features/outcome/outcome-screen` with Win / Lose variants (no truth reveal on Lose, per ADR-0010) and a "New investigation" button that calls `resetCurrentCase`. Added `getQuestionsAskedCount` selector to `useGameStore` (flattens `messagesBySuspect`, filters role === 'user'). `GameRoot` now renders `<OutcomeScreen>` in place of the placeholder; after reset, `deriveScreen` returns `'briefing'` automatically.
 
 ## What was hard
 
@@ -14,7 +15,7 @@
 
 ## Interesting moments worth showing on video
 
-- _(stub)_
+- First full playthrough — Briefing → cracked Marcus → correct accusation → Win screen. Worth a screen recording for the YouTube cut later.
 
 ## Mistakes
 
