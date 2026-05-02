@@ -57,8 +57,8 @@ export function ChatView({ error, onRetry }: ChatViewProps) {
 								className={cn(
 									'max-w-[80%] whitespace-pre-wrap rounded-2xl px-4 py-2 text-sm leading-relaxed',
 									message.role === 'user'
-										? 'bg-primary text-primary-foreground'
-										: 'bg-muted text-foreground'
+										? 'bg-primary font-sans text-primary-foreground'
+										: 'bg-muted font-mono text-foreground'
 								)}
 							>
 								{isPendingAssistant(
