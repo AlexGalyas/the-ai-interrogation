@@ -24,7 +24,7 @@ export function InterrogationRoom({ suspect, caseId }: InterrogationRoomProps) {
 
 	return (
 		<div data-suspect-id={suspect.id} className="flex min-h-0 flex-1 flex-col">
-			<ChatView error={error} onRetry={retry} />
+			<ChatView suspectName={suspect.name} error={error} onRetry={retry} />
 			<MessageInput onSend={ask} disabled={isStreaming} />
 		</div>
 	)

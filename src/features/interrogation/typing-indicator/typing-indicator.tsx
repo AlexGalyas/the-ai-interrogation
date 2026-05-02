@@ -1,13 +1,13 @@
 export function TypingIndicator() {
 	return (
-		<span
+		<div
 			role="status"
-			aria-label="Suspect is typing"
-			className="inline-flex items-center gap-1"
+			aria-label="Suspect is responding"
+			className="inline-flex items-center gap-1 px-3 py-2"
 		>
-			<span className="size-1.5 animate-bounce rounded-full bg-current [animation-delay:-0.3s]" />
-			<span className="size-1.5 animate-bounce rounded-full bg-current [animation-delay:-0.15s]" />
-			<span className="size-1.5 animate-bounce rounded-full bg-current" />
-		</span>
+			<span className="dot dot-1" />
+			<span className="dot dot-2" />
+			<span className="dot dot-3" />
+		</div>
 	)
 }

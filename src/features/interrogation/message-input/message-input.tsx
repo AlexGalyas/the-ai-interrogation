@@ -41,7 +41,7 @@ export function MessageInput({ onSend, disabled = false }: MessageInputProps) {
 				value={value}
 				onChange={(event) => setValue(event.target.value)}
 				onKeyDown={handleKeyDown}
-				placeholder="Ask the suspect a question…"
+				placeholder="What do you want to ask?"
 				rows={1}
 				disabled={disabled}
 				className="max-h-40 flex-1"
