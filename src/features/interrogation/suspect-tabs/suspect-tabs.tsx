@@ -1,5 +1,6 @@
 'use client'
 
+import { InitialAvatar } from '@/components/initial-avatar'
 import type { Suspect } from '@/lib/game/types'
 import { cn } from '@/lib/utils'
 
@@ -29,25 +30,28 @@ export function SuspectTabs({ suspects, activeSuspectId, onSelect }: SuspectTabs
 						tabIndex={isActive ? 0 : -1}
 						onClick={() => onSelect(suspect.id)}
 						className={cn(
-							'flex min-w-0 flex-col items-start gap-0.5 border-b-2 px-3 py-3 text-left transition-colors outline-none focus-visible:bg-muted/50',
+							'flex min-w-0 items-center gap-2 border-b-2 px-3 py-3 text-left transition-colors outline-none focus-visible:bg-muted/50',
 							isActive
 								? 'border-primary text-foreground'
 								: 'border-transparent text-muted-foreground hover:text-foreground'
 						)}
 					>
-						<span
-							className={cn(
-								'truncate text-sm',
-								isActive ? 'font-semibold' : 'font-medium'
-							)}
-						>
-							{suspect.name}
-						</span>
-						{isActive && (
-							<span className="truncate text-xs text-muted-foreground">
-								{suspect.oneLiner}
+						<InitialAvatar name={suspect.name} size="sm" />
+						<span className="flex min-w-0 flex-col gap-0.5">
+							<span
+								className={cn(
+									'truncate text-sm',
+									isActive ? 'font-semibold' : 'font-medium'
+								)}
+							>
+								{suspect.name}
 							</span>
-						)}
+							{isActive && (
+								<span className="truncate text-xs text-muted-foreground">
+									{suspect.oneLiner}
+								</span>
+							)}
+						</span>
 					</button>
 				)
 			})}
