@@ -12,18 +12,22 @@ export function BriefingScreen({ kase, onBegin }: BriefingScreenProps) {
 
 	return (
 		<div className="mx-auto flex w-full max-w-2xl flex-col gap-8 px-6 py-12">
-			<h1 className="text-3xl font-semibold leading-tight text-foreground sm:text-4xl">
+			<h1 className="font-serif text-4xl font-semibold tracking-tight md:text-5xl">
 				{kase.title}
 			</h1>
 
-			<div className="flex flex-col gap-4 text-base leading-relaxed text-foreground">
+			<div className="max-w-prose font-serif text-lg leading-relaxed text-foreground">
 				{paragraphs.map((paragraph, index) => (
-					<p key={index}>{paragraph}</p>
+					<p key={index} className="mb-4 last:mb-0">
+						{paragraph}
+					</p>
 				))}
 			</div>
 
-			<section className="flex flex-col gap-4">
-				<h2 className="text-xl font-semibold text-foreground">Suspects</h2>
+			<section className="flex flex-col">
+				<h2 className="mb-4 font-sans text-sm uppercase tracking-wider text-muted-foreground">
+					Suspects
+				</h2>
 				<div className="flex flex-col gap-3">
 					{kase.suspects.map((suspect) => (
 						<SuspectCard key={suspect.id} suspect={suspect} />
@@ -31,12 +35,12 @@ export function BriefingScreen({ kase, onBegin }: BriefingScreenProps) {
 				</div>
 			</section>
 
-			<p className="text-sm text-muted-foreground">
+			<p className="mb-6 mt-8 text-center font-sans text-sm italic text-muted-foreground">
 				Question suspects. Find contradictions. Accuse the murderer with evidence.
 			</p>
 
-			<div>
-				<Button onClick={onBegin} size="lg">
+			<div className="flex justify-center">
+				<Button onClick={onBegin} size="lg" className="w-full min-w-[240px] md:w-auto">
 					Begin investigation
 				</Button>
 			</div>
