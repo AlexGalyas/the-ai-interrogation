@@ -6,6 +6,7 @@ import { cn } from '@/lib/utils'
 import { useGameStore, type Message } from '@/stores/game'
 
 interface ChatViewProps {
+	suspectName: string
 	error: string | null
 	onRetry: () => void
 }
@@ -23,7 +24,7 @@ function isPendingAssistant(
 	)
 }
 
-export function ChatView({ error, onRetry }: ChatViewProps) {
+export function ChatView({ suspectName, error, onRetry }: ChatViewProps) {
 	const messages =
 		useGameStore((state) => {
 			const progress = state.progressByCase[state.currentCaseId]
@@ -40,9 +41,11 @@ export function ChatView({ error, onRetry }: ChatViewProps) {
 	return (
 		<div className="flex flex-1 flex-col gap-3 overflow-y-auto px-6 py-6">
 			{isEmpty ? (
-				<p className="m-auto max-w-sm text-center text-sm text-muted-foreground">
-					Begin the interrogation. Ask a question below.
-				</p>
+				<div className="flex flex-1 items-center justify-center">
+					<p className="text-base italic text-muted-foreground font-sans">
+						Ask {suspectName} your first question…
+					</p>
+				</div>
 			) : (
 				<>
 					{messages.map((message, index) => (

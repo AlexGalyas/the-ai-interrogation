@@ -137,3 +137,35 @@
 		@apply font-sans;
 	}
 }
+
+@keyframes dot-pulse {
+	0%,
+	60%,
+	100% {
+		opacity: 0.2;
+	}
+	30% {
+		opacity: 1;
+	}
+}
+
+.dot {
+	display: inline-block;
+	width: 6px;
+	height: 6px;
+	border-radius: 9999px;
+	background: var(--muted-foreground, currentColor);
+	animation: dot-pulse 1.4s ease-in-out infinite;
+}
+
+.dot-1 {
+	animation-delay: 0ms;
+}
+
+.dot-2 {
+	animation-delay: 150ms;
+}
+
+.dot-3 {
+	animation-delay: 300ms;
+}
