@@ -23,10 +23,10 @@ By the end of this weekend, opening `localhost:3000` should feel like opening a 
 - **Theme infrastructure**: dark-only theme; no toggle. Palette wired through Tailwind v4 `@theme` and shadcn CSS variables.
 - **Fonts**: three roles wired via `next/font/google` (Crimson Text, Geist Sans, Geist Mono) and exposed as Tailwind utilities (`font-serif`, `font-sans`, `font-mono`).
 - **Palette application**: every screen uses the new palette via CSS variables (no hardcoded `bg-slate-900` etc.).
-- **Hover/focus states**: CSS-transitions on buttons, tabs, suspect cards, suspect picker rows, accuse button. Smooth, ~150ms ease.
+- **Hover/focus states**: CSS-transitions on buttons, tabs, suspect cards, suspect picker rows, accuse button. Smooth, ~150ms ease. *(Delivered: shadcn `Button` ships `transition-all`; `suspect-tabs` and `suspect-picker` got explicit `transition-colors` during Step 4. `suspect-card` on Briefing was left static — the card is not an interactive surface in W2/MP, so a hover transition would have been a state-without-affordance. Logged in §10 as "decide on suspect-card interactivity in W3 when the second/third suspects land.")*
 - **Avatars from initials**: in `suspect-card`, `suspect-tabs`, `suspect-picker` — replace the neutral square placeholder with a circular avatar showing initials over a per-suspect deterministic gradient.
 - **Empty state in chat**: when active suspect has no messages yet, render muted italic line: *"Ask {suspect.name} your first question…"*.
-- **Loading state for accusation submit**: while `evaluateAccusation` runs (synchronous, normally instant), the Submit button switches to a disabled spinner state. Implement defensively even if it's never visible — the pattern matters.
+- **Loading state for accusation submit**: while `evaluateAccusation` runs (synchronous, normally instant), the Submit button switches to a disabled state with a `Submitting…` label. *(Delivered as label-change only — no spinner icon. The "spinner" phrasing in this bullet conflicts with §4.5 which explicitly defers the icon to W4; §4.5 is the binding text. Pattern is in place — `isSubmitting` gates Submit and Cancel — and ready for W5's planned LLM-as-judge accusation validation, where the in-flight state will actually be visible.)*
 - **Textarea placeholder rewrite**: "What do you want to ask?" (chat input) and "What evidence convinces you it was them?" (accusation modal — already specced).
 - **Briefing visual hierarchy**: premise text as a typographic block with `font-serif`, generous line-height, max-width for readability.
 - **Improved typing indicator**: three dots with CSS keyframes (staggered pulse), replacing whatever Weekend 1 shipped.
@@ -284,20 +284,20 @@ If a step balloons (say, Step 2 takes 60 minutes because shadcn variables don't 
 
 Per AGENTS.md §4.7, plus:
 
-- [ ] `pnpm typecheck`, `pnpm lint`, `pnpm test`, `pnpm test:e2e` all pass
-- [ ] All scenarios in §6.2 pass manually
-- [ ] All steps from §7 are merged into `main`
-- [ ] `docs/specs/mini-polish-visual-foundation.md` updated to reflect any spec deviations
-- [ ] `docs/journal/mini-polish.md` filled in across all sections
-- [ ] ADR-0011 (or next available) committed under `docs/decisions/`
-- [ ] New screen recording of Win playthrough saved locally (replaces Weekend 2 ugly grey footage)
-- [ ] Tag `mini-polish` pushed to GitHub after the final PR merges
+- [x] `pnpm typecheck`, `pnpm lint`, `pnpm test`, `pnpm test:e2e` all pass
+- [x] All scenarios in §6.2 pass manually
+- [x] All steps from §7 are merged into `main` (Steps 1–7 merged via PRs #15–#22; Step 8 lands with this PR)
+- [x] `docs/specs/mini-polish-visual-foundation.md` updated to reflect any spec deviations (this Step 8 commit — see §2.1 annotations and §10)
+- [x] `docs/journal/mini-polish.md` filled in across all sections
+- [x] ADR-0011 committed under `docs/decisions/0011-noir-palette-and-typography.md` (only ADR added this weekend)
+- [ ] New screen recording of Win playthrough saved locally (replaces Weekend 2 ugly grey footage) — *manual deliverable, the maintainer records after this PR merges*
+- [ ] Tag `mini-polish` pushed to GitHub after the final PR merges — *manual, post-merge*
 
 ---
 
 ## 9. Decisions recorded
 
-Promoted to ADR-0011 in Step 1.
+Promoted to ADR-0011 in Step 1. **No additional ADRs were created during execution** — the font-loading approach (renaming `--font-geist-*` → `--font-sans` / `--font-mono`) was a bug fix to existing wiring, not a new architectural decision.
 
 - **Tone is noir-classic** over modern-minimal or cyberpunk. Maintains atmosphere of the genre and gives Weekend 4 a coherent base to extend.
 - **Dark-only, no toggle.** A game has a single intended look. Light mode would dilute atmosphere and add scope.
@@ -308,4 +308,6 @@ Promoted to ADR-0011 in Step 1.
 
 ## 10. Open questions
 
-*(empty at draft time — populate during execution)*
+- **Suspect-card hover state on Briefing.** Step 4 added avatars but left `suspect-card` non-interactive (no hover, no click target). With one suspect this is fine. When Henry and the third suspect land in W3, decide whether the card should be a click target ("read full bio") or stay decorative — adding a hover transition without a navigation target would be a state-without-affordance.
+- **Out-of-scope items that didn't sneak in.** Verified §2.2 was respected: no film grain, no Motion library, no typewriter, no jitter, no sound, no music, no light mode, no theme toggle, no Motion-driven modal physics. The Mini-Polish weekend stayed inside its budget.
+- **Visible loading state for the accusation Submit button.** The `isSubmitting` label flip currently never paints because `evaluateAccusation` is synchronous and React batches the open/close in the same flush. W5's LLM-as-judge accusation validation will make this visible naturally — no proactive change needed in W4.
