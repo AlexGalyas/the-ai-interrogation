@@ -27,6 +27,7 @@ const MIN_EVIDENCE_LENGTH = 10
 export function AccusationModal({ kase, open, onOpenChange }: AccusationModalProps) {
 	const [selectedSuspectId, setSelectedSuspectId] = useState<string | null>(null)
 	const [evidence, setEvidence] = useState('')
+	const [isSubmitting, setIsSubmitting] = useState(false)
 	const [prevOpen, setPrevOpen] = useState(open)
 	const submitAccusation = useGameStore((state) => state.submitAccusation)
 
@@ -35,18 +36,25 @@ export function AccusationModal({ kase, open, onOpenChange }: AccusationModalPro
 		if (open) {
 			setSelectedSuspectId(null)
 			setEvidence('')
+			setIsSubmitting(false)
 		}
 	}
 
 	const trimmedLength = evidence.trim().length
 	const canSubmit = selectedSuspectId !== null && trimmedLength >= MIN_EVIDENCE_LENGTH
 
-	function handleSubmit() {
-		if (!canSubmit || selectedSuspectId === null) return
-		const accusation: Accusation = { suspectId: selectedSuspectId, evidence }
-		const result = evaluateAccusation(kase, accusation)
-		submitAccusation(accusation, result)
-		onOpenChange(false)
+	async function handleSubmit() {
+		if (!canSubmit || selectedSuspectId === null || isSubmitting) return
+		setIsSubmitting(true)
+		try {
+			const accusation: Accusation = { suspectId: selectedSuspectId, evidence }
+			const result = evaluateAccusation(kase, accusation)
+			submitAccusation(accusation, result)
+			onOpenChange(false)
+		} catch (error) {
+			console.error('Accusation submission failed:', error)
+			setIsSubmitting(false)
+		}
 	}
 
 	return (
@@ -77,11 +85,15 @@ export function AccusationModal({ kase, open, onOpenChange }: AccusationModalPro
 					</div>
 				</div>
 				<DialogFooter>
-					<Button variant="ghost" onClick={() => onOpenChange(false)}>
+					<Button
+						variant="ghost"
+						onClick={() => onOpenChange(false)}
+						disabled={isSubmitting}
+					>
 						Cancel
 					</Button>
-					<Button onClick={handleSubmit} disabled={!canSubmit}>
-						Submit accusation
+					<Button onClick={handleSubmit} disabled={!canSubmit || isSubmitting}>
+						{isSubmitting ? 'Submitting…' : 'Submit accusation'}
 					</Button>
 				</DialogFooter>
 			</DialogContent>
