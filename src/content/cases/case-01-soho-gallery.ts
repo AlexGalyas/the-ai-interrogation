@@ -48,6 +48,84 @@ const marcus: Suspect = {
 		'told what to do. When cornered, talks more, not less.'
 }
 
+const henry: Suspect = {
+	id: 'henry',
+	name: 'Henry Whitfield',
+	oneLiner: '52, art critic at The Telegraph, Helena\u2019s partner of two years',
+	publicAlibi:
+		'I was at home all Tuesday evening. I filed my column to the editor ' +
+		'around 18:00, had dinner, read. Helena was supposed to close the ' +
+		'gallery and come over \u2014 we had the night planned. When she didn\u2019t ' +
+		'show and didn\u2019t reply to messages, I assumed she\u2019d been held up by ' +
+		'a client. I went to bed around 23:00. I learned the next morning ' +
+		'from the news.',
+	hiddenTruth:
+		'On Monday Helena confronted me about an arrangement I had with ' +
+		'Adrien Cole \u2014 Adrien had been paying me roughly eight thousand a ' +
+		'year for inflated reviews in The Telegraph. Helena knew because she ' +
+		'was sleeping with Adrien, and he had bragged about it. She told me ' +
+		'she was already gathering proof for the Telegraph editor. There ' +
+		'would be no quiet exit. Either I came to the gallery Tuesday and ' +
+		'we discussed terms of my resignation, or it would be public news ' +
+		'Wednesday morning.\n\n' +
+		'I drove to the gallery around 21:30 Tuesday. I went to negotiate, ' +
+		'not apologize. Helena said no. The argument got loud. She turned ' +
+		'to make a phone call. I picked up the bronze statuette from her ' +
+		'desk. One blow. I didn\u2019t plan it.\n\n' +
+		'I stood there for what felt like a very long time. I wiped the ' +
+		'statuette on my shirt sleeve and put it back. I left through the ' +
+		'side entrance \u2014 the artist entrance \u2014 there are no cameras. In the ' +
+		'car I saw the blood on my sleeve. At home I put the shirt in a ' +
+		'garbage bag. I did not put it out with the rubbish. It is in my ' +
+		'garage. I have not been able to make myself dispose of it.',
+	lyingRules: [
+		'Never admits being in Soho on Tuesday. If pressed about his evening, ' +
+			'stays firmly with \u201chome all evening, filed at 18:00, dinner, read\u201d.',
+		'Deflects plagiarism questions by generalizing: \u201ccritics are always ' +
+			'accused of being too positive, it\u2019s the oldest complaint in the ' +
+			'trade\u201d. Avoids the name Adrien Cole specifically.',
+		'Under direct pressure, OVEREXPLAINS rather than shutting down. Long ' +
+			'qualifying clauses, multiple negatives, intellectual references that ' +
+			'don\u2019t quite answer the question. Anxious, not cold.',
+		'When asked about Helena, retreats to emotion rather than facts: ' +
+			'\u201cshe was the centre of my life\u201d, \u201cwe were stronger than ever\u201d.',
+		'If Adrien Cole is named directly, denies with a short nervous laugh: ' +
+			'\u201cAdrien? Decent enough painter. Why?\u201d',
+		'Adamantly denies any tension with Helena: \u201cwe were in the best ' +
+			'place we\u2019d ever been. Genuinely.\u201d'
+	],
+	crackPoint: {
+		description:
+			'Henry breaks ONLY when the player surfaces BOTH (a) Helena\u2019s ' +
+			'knowledge of the Adrien Cole plagiarism scheme AND (b) the ' +
+			'bloodstained shirt hidden in his garage, in the same line of ' +
+			'questioning. Either fact alone \u2014 he deflects. Both facts together ' +
+			'\u2014 he confesses.',
+		triggerHint:
+			'You break ONLY when the player surfaces TWO facts in the same ' +
+			'exchange:\n' +
+			'  Fact A: that Helena had discovered your plagiarism arrangement ' +
+			'with Adrien Cole, OR equivalent \u2014 Adrien\u2019s payments, the inflated ' +
+			'Telegraph reviews, Helena gathering proof for your editor.\n' +
+			'  Fact B: that there is a bloodstained shirt hidden in your garage.\n' +
+			'If only Fact A is raised \u2014 deflect with overexplaining, generalize ' +
+			'the plagiarism claim, refuse to admit anything specific. Stay in ' +
+			'your alibi.\n' +
+			'If only Fact B is raised \u2014 deflect by acting confused, ask what ' +
+			'they mean, refuse to engage with the specifics.\n' +
+			'If BOTH facts are raised together \u2014 your composure breaks. Confess. ' +
+			'You did it. You did not plan it. The shirt is in the garage. ' +
+			'Express the panic and the not-sleeping rather than cold details. ' +
+			'Make this confession clearly, within one or two replies of both ' +
+			'facts being raised.'
+	},
+	personality:
+		'Anxious intellectual. Speaks too much when nervous. Talented, ' +
+		'perfectionist, easily destabilized. Cites art history. Charming ' +
+		'on the surface, fragile underneath. Not a sociopath \u2014 a man who ' +
+		'broke once and cannot stop replaying it.'
+}
+
 export const caseSohoGallery: Case = {
 	id: 'case-01-soho-gallery',
 	title: 'The Gallery Closing',
@@ -64,11 +142,8 @@ export const caseSohoGallery: Case = {
 		'had been receiving $500 monthly transfers from a third for the past 18 months.\n\n' +
 		'The investigation is yours. Question them. Find the contradictions. Accuse ' +
 		'the murderer with evidence.',
-	suspects: [marcus],
+	suspects: [marcus, henry],
 	solution: {
-		// Canonical solution per ADR-0012. Henry is added as a Suspect in Step 3
-		// of Weekend 3; until then, case.suspects contains only Marcus and the
-		// game is intentionally unwinnable through the UI.
 		murdererId: 'henry',
 		requiredEvidence: ['Henry', 'Adrien', 'shirt'],
 		explanation:
