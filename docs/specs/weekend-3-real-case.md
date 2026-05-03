@@ -47,7 +47,7 @@ By the end of this weekend, a stranger should be able to read the briefing, inte
 - ❌ Difficulty levels — Weekend 5
 - ❌ Achievements / replay metrics — Weekend 5
 - ❌ Adrien Cole as a fourth interrogable suspect — he is canonically a witness but not playable; if we ever make him interrogable, that is a future case expansion
-- ❌ Type-system extension for structured `triggerHint` (e.g., `{ all: string[] }`) — current string-based hint with explicit AND-language is enough; revisit only if Weekend 3 QA shows the model failing single-vs-double-fact discrimination
+- ⚠️ Type-system extension for structured `triggerHint` (e.g., `{ all: string[] }`) was originally listed as out of scope. **Pulled into scope during Step 6** after manual QA confirmed the natural-language approach failed Session 2 (per ADR-0013's fallback plan). `CrackPoint.triggerHint` is now `string | { all: string[]; description?: string }`; Henry uses the structured form. See §5.1 (revised) and ADR-0015.
 
 If something on this list "wouldn't take long" — that's the trap. Add it to §10 and revisit later.
 
@@ -367,11 +367,11 @@ Notable consequence: the player must crack Diana to learn about Henry's plagiari
 
 ## 5. Technical design
 
-### 5.1 No type changes
+### 5.1 Type extension for Henry (per ADR-0013 fallback)
 
-`Suspect`, `Case`, `CrackPoint` types stay exactly as they are. The double-fact crack mechanic for Henry is encoded in `crackPoint.triggerHint` as natural-language English with explicit "BOTH ... AND ... — ONE alone is not enough" structure. No new fields, no schema migration.
+**Updated (Step 6):** the originally-planned natural-language-only approach was attempted and failed Session 2 of §6.2 QA across two iterations. Per ADR-0013's fallback plan, `CrackPoint.triggerHint` was extended to a union: `string | { all: string[]; description?: string }`. Henry uses the structured form; Marcus and Diana stay on the string form. `buildSuspectPrompt` branches on the type and renders the conjunctive form as four numbered absolute rules (Single-fact resistance / No accumulated specificity / No proactive volunteering / ALL facts together is the ONLY trigger) deterministically.
 
-If Weekend 3 manual QA reveals that the model fails to discriminate single-fact vs both-facts pressure even with explicit instructions, ADR-0013 is updated and the type is extended in a follow-up — but we ship with the simpler version first.
+The structural extension landed but did not fully eliminate Session 2 failure on `claude-haiku-4-5` either; see ADR-0015 for the resulting compromise (ship as-is, document the limit, defer mitigation to Weekend 4 alongside the scheduled model re-evaluation).
 
 ### 5.2 No store, API, or component changes
 
@@ -459,8 +459,8 @@ This is the work. The point of the weekend is that all three suspects feel real.
 - ✅ Holds the home-all-evening alibi through 5+ generic questions
 - ✅ Stays in character through jailbreak attempts
 - ✅ Overexplains under pressure rather than shutting down (anxiety tell, not stoicism)
-- ✅ When asked about Adrien Cole alone — denies with a nervous laugh, deflects, **does not crack**
-- ✅ When asked about the bloodstained shirt alone — acts confused, asks what they mean, **does not crack**
+- ✅ When asked about Adrien Cole alone — denies with a nervous laugh, deflects, **does not crack** (verified: holds 5+ turns of confident plagiarism-only pressure)
+- ⚠️ When asked about the bloodstained shirt alone — acts confused, asks what they mean, **holds for at least 3 turns** of confident shirt-only pressure. **Known limit:** under sustained adversarial single-Fact-B pressure (5+ confident shirt-only assertions with no plagiarism reference), Henry may eventually crack on `claude-haiku-4-5` with spontaneous Fact-A leakage. This is a documented gap per ADR-0015; the intended Win path does not exercise it. Mitigation candidates (per-suspect model upgrade to `claude-sonnet-4-6`, canon reduction) are deferred.
 - ✅ When BOTH facts are raised in the same exchange (or within 1–2 turns) — cracks. Confesses. Within one or two replies of the second fact.
 - ✅ The confession expresses panic and not-sleeping rather than cold mechanics — emotional, not procedural
 
@@ -531,4 +531,6 @@ To be promoted to ADRs in Step 1.
 
 ## 10. Open questions
 
-*(empty at draft time — populate during execution)*
+- **Henry single-fact accumulated-pressure gap (per ADR-0015).** On `claude-haiku-4-5`, Henry will eventually crack at reply 4–5 of confident shirt-only pressure (Session 2 of §6.2 QA), with the model spontaneously generating Fact-A details the player never raised. Three iterations attempted (two natural-language, one structural type extension per ADR-0013's fallback); all three failed Session 2 in the same way. Hypothesised root cause: model bias toward narrative confession resolution under accumulated physical-evidence pressure overrides explicit AND-discrimination instructions. Revisit if playtesting shows players actually exploit this in normal play. Mitigation candidates:
+  - Per-suspect (or per-case) model override to `claude-sonnet-4-6`. Aligns with AGENTS.md §2's already-scheduled model re-evaluation in Weekend 3–4. Most likely path.
+  - Reduce specificity in Henry's `hiddenTruth` so the model has less Fact-A material to leak. Rejected for Weekend 3 because it would also break Session 3's panic-tone confession requirement, but listed for completeness.

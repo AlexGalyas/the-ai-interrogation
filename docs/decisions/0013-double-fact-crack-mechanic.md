@@ -1,6 +1,6 @@
 # ADR-0013: Double-Fact Crack Mechanic Encoded in `triggerHint` Natural-Language English
 
-**Status:** Accepted
+**Status:** Accepted (with observed limit — see Postscript and ADR-0015)
 **Date:** 2026-05-03
 
 ## Context
@@ -68,3 +68,21 @@ This ADR is reopened (Status: Accepted → Superseded by a follow-up ADR) only i
 ## Rationale
 
 The simplest thing that could possibly work, with a written-down escape hatch. Modern frontier models follow explicit conjunction instructions reliably for short, well-named fact lists; if Weekend 3 QA confirms that, the type stays simple forever and the cost of the decision is zero. If QA disconfirms it, we have a one-suspect failure with an obvious remedy — extend the type, route Henry through the structured branch, leave the rest of the suspects alone. Either way, the decision to ship the simple version first is cheap to make and cheap to reverse, which is the right shape for a hobbyist weekend's-worth of prompt-engineering work.
+
+## Postscript (2026-05-03)
+
+QA per spec §6.2 ran the discrimination tests on `claude-haiku-4-5` after content-weekend-3 landed. Outcome:
+
+- Single-fact Fact-A pressure (5 turns of plagiarism-only): **PASS** — Henry held alibi, no leak.
+- Both facts in same exchange (Session 3): **PASS** — Henry confessed within 1–2 turns with panic-tone.
+- Single-fact Fact-B pressure (5 turns of shirt-only): **FAIL** — Henry cracked at reply 4–5 with full confession AND spontaneous Fact-A leak.
+
+Three iterations attempted in this order:
+
+1. Natural-language tightening per this ADR (sustained Fact-A/B resistance + anti-leak CRITICAL rule).
+2. Symmetrised Fact-B language + "accumulated specificity ≠ new information" clause.
+3. Structural fallback per the §Fallback plan above: extended `CrackPoint.triggerHint` to `string | { all: string[]; description?: string }`, `buildSuspectPrompt` composes four numbered absolute rules deterministically.
+
+All three iterations failed Session 2 in the same way — Henry cracked at reply 4–5 with the model spontaneously generating Fact-A details the player never raised. The fallback DID land as durable infrastructure (typed, composer-tested, deterministic from data) but the underlying model behaviour — frontier-model bias toward narrative confession resolution under accumulated physical-evidence pressure — was not eliminated by either prompt-strength or structured-data approaches.
+
+This ADR's mechanism stands. The discrimination is encoded in code, structured from data, with explicit anti-leak rules. The model's prior is the binding constraint. **ADR-0015 records the resulting compromise** (ship as-is, document the limit in spec §6.2, defer further mitigation — model upgrade or canon reduction — to a future weekend if playtesting shows the gap matters). Full QA transcripts of all three failing iterations live in `docs/journal/weekend-3-qa-notes.md`.
