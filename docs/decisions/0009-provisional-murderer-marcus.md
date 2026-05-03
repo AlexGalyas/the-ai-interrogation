@@ -1,6 +1,6 @@
 # ADR-0009: Marcus Is the Provisional Murderer in Weekend 2
 
-**Status:** Accepted (provisional — superseded in Weekend 3)
+**Status:** Superseded by [ADR-0012](0012-case-01-canon-update.md)
 **Date:** 2026-04-30
 
 ## Context
