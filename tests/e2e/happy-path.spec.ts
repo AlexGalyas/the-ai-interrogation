@@ -9,8 +9,7 @@ test.describe('happy path: briefing → interrogate → accuse → win', () => {
 		await page.reload()
 	})
 
-	// Skipped during Weekend 3 transition. Step 5 will re-enable this test against Henry.
-	test.skip('player can solve the case end-to-end', async ({ page }) => {
+	test('player can solve the case end-to-end', async ({ page }) => {
 		await page.route('**/api/interrogate', async (route) => {
 			await route.fulfill({
 				status: 200,
@@ -40,10 +39,12 @@ test.describe('happy path: briefing → interrogate → accuse → win', () => {
 		const dialog = page.getByRole('dialog')
 		await expect(dialog).toBeVisible()
 
-		await dialog.getByRole('radio', { name: /marcus/i }).click()
+		await dialog.getByRole('radio', { name: /henry/i }).click()
 
 		const evidence = dialog.getByPlaceholder(/what evidence convinces you/i)
-		await evidence.fill('the witness saw his car at the gallery at 21:30')
+		await evidence.fill(
+			'Henry killed her because Helena found his plagiarism with Adrien Cole. The bloodstained shirt is in his garage.'
+		)
 
 		await dialog.getByRole('button', { name: /submit accusation/i }).click()
 
