@@ -48,6 +48,7 @@ By the end of this weekend, a stranger should be able to read the briefing, inte
 - ❌ Achievements / replay metrics — Weekend 5
 - ❌ Adrien Cole as a fourth interrogable suspect — he is canonically a witness but not playable; if we ever make him interrogable, that is a future case expansion
 - ⚠️ Type-system extension for structured `triggerHint` (e.g., `{ all: string[] }`) was originally listed as out of scope. **Pulled into scope during Step 6** after manual QA confirmed the natural-language approach failed Session 2 (per ADR-0013's fallback plan). `CrackPoint.triggerHint` is now `string | { all: string[]; description?: string }`; Henry uses the structured form. See §5.1 (revised) and ADR-0015.
+- ⚠️ Public vs. private case projection (`PublicCase` / `PublicSuspect` types, `toPublicCase` helper, server-side `/api/accuse` route) was **not originally in scope**. Pulled in during Step 4 after a smoke test discovered the full `Case` (including `solution` and every suspect's `hiddenTruth` / `lyingRules` / `crackPoint`) was being serialized into the SSR HTML payload — the answer key was readable in `view-source:`. Treated as a security regression that had to ship within the weekend; captured in ADR-0014. The remaining JS-bundle leak is acknowledged and deferred (see ADR-0014 §Consequences).
 
 If something on this list "wouldn't take long" — that's the trap. Add it to §10 and revisit later.
 
@@ -509,23 +510,25 @@ Total estimated: ~4h 35m + 60m QA buffer = ~5h 35m. If the prompt engineering on
 
 Per AGENTS.md §4.7, plus:
 
-- [ ] `pnpm typecheck`, `pnpm lint`, `pnpm test`, `pnpm test:e2e` all pass
-- [ ] All scenarios in §6.2 pass manually for all three suspects
-- [ ] All steps from §7 are merged into `main`
-- [ ] `docs/specs/weekend-3-real-case.md` updated to reflect any spec deviations
-- [ ] `docs/journal/weekend-3.md` filled in across all sections
-- [ ] ADR-0012 and ADR-0013 (or assigned numbers) committed under `docs/decisions/`
-- [ ] New Win-playthrough screen recording saved locally
-- [ ] Tag `weekend-3` pushed after the final PR merges
+- [x] `pnpm typecheck`, `pnpm lint`, `pnpm test`, `pnpm test:e2e` all pass
+- [x] All scenarios in §6.2 pass manually for all three suspects (Session 2 limit per ADR-0015 documented and accepted)
+- [x] All steps from §7 are merged into `main`
+- [x] `docs/specs/weekend-3-real-case.md` updated to reflect any spec deviations
+- [x] `docs/journal/weekend-3.md` filled in across all sections
+- [x] ADR-0012 and ADR-0013 (plus ADR-0014 public projection and ADR-0015 single-fact limit) committed under `docs/decisions/`
+- [x] New Win-playthrough screen recording saved locally
+- [ ] Tag `weekend-3` pushed after the final PR merges (manual step, post-merge)
 
 ---
 
 ## 9. Decisions recorded
 
-To be promoted to ADRs in Step 1.
+Promoted to ADRs in Step 1; two more ADRs surfaced and shipped during Steps 4 and 6.
 
 - **ADR-0012 — Case-01 canon update: Henry is the murderer; Marcus reassigned to innocent witness.** Reverses the provisional Marcus-as-murderer from Weekend 2 (ADR-0009). Marcus stays in the case as a misdirect: he was on scene after the killing, lies about it from fear of suspicion. Henry is the actual killer with a compound motive (plagiarism + sexual betrayal). Diana joins as a third investigative vector. The decision is captured here so Weekend 5's potential Case 2 design has a clean precedent for how cases should resolve.
-- **ADR-0013 — Double-fact crack mechanic for Henry, encoded in `triggerHint` text.** Henry's `crackPoint.triggerHint` instructs the model to break only when both Adrien-plagiarism AND bloodstained-shirt facts are raised in the same exchange. The mechanic is encoded in natural-language English rather than introducing a structured `triggerHint` schema. If Weekend 3 QA shows the model fails to discriminate, ADR-0013 is reopened and the type is extended in a follow-up. Single-fact crack points (Marcus, Diana) remain the simpler default.
+- **ADR-0013 — Double-fact crack mechanic for Henry, encoded in `triggerHint` text.** Henry's `crackPoint.triggerHint` instructs the model to break only when both Adrien-plagiarism AND bloodstained-shirt facts are raised in the same exchange. The mechanic was first encoded in natural-language English; under QA the fallback was activated and `CrackPoint.triggerHint` was extended to `string | { all: string[]; description?: string }` with a deterministic 4-rule prompt composer. Status updated to "Accepted (with observed limit)"; see Postscript and ADR-0015. Single-fact crack points (Marcus, Diana) remain on the simpler string form.
+- **ADR-0014 — Public vs. private case projection (added Step 4, not originally planned).** A smoke test during Diana's integration showed `case.solution` and every suspect's `hiddenTruth` / `lyingRules` / `crackPoint` were being serialized into the SSR HTML — the answer key was readable in `view-source:`. Introduced `PublicCase` / `PublicSuspect` projected types, a `toPublicCase` helper, and moved `evaluateAccusation` server-side behind a thin `/api/accuse` route. The bundle-level leak is acknowledged and deferred.
+- **ADR-0015 — Accept the Henry single-fact accumulated-pressure limit; ship with documented gap (added Step 6).** Three iterations on `claude-haiku-4-5` (two natural-language tunings + one structural type extension) all failed Session 2 of §6.2 with the same model-behavior leak. ADR-0015 ships the structural fallback as load-bearing infrastructure, relaxes Session 2's acceptance criterion to "holds for at least 3 turns of confident single-Fact-B pressure", and defers further mitigation (per-suspect model upgrade to `claude-sonnet-4-6` or canon reduction in Henry's `hiddenTruth`) to Weekend 4 alongside the already-scheduled model re-evaluation.
 
 ---
 

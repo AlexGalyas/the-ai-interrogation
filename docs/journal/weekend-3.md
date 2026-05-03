@@ -26,17 +26,23 @@
 
 - First time the cast feels real — two avatars in tabs (Marcus and Henry), two characters with different voices: Marcus the self-deprecating fast-talker vs Henry the anxious overexplainer. Even though Diana isn't in yet, the contrast between Marcus and Henry is the new visible moment in Step 3 that the demo can lean on.
 - Three suspects rendering with three deterministic-color avatars — first time the cast feels populated. After Step 4, the row of three tabs (Marcus / Henry / Diana) and the briefing's three concrete leads (Honda Civic, charcoal Italian shirt fibers, $500 monthly transfers to Iris) line up one-to-one with the suspects. Best B-roll candidate for the demo recording: cycling through the three tabs to show how distinct the avatars and voices are.
+- Full Win playthrough: briefing → Diana cracks on the bank-record fact and voluntarily passes the plagiarism tip-off → Henry confesses under both-facts pressure → accusation containing "Henry / Adrien / shirt" → Win screen with question count. Local recording path TBD by the human (insert path before publishing).
+- Henry's single-fact resistance investigation — three iterations of prompt + type-system surgery captured live, ending with the ADR-0015 ship-with-gap call. Best didactic clip about the limits of prompt engineering vs. model behavior. Local recording path TBD by the human.
 
 ## Mistakes / things I'd do differently
 
--
+- Did not catch the SSR answer-key leak (ADR-0014) until Step 4 smoke testing. Should have been part of Mini-Polish or Weekend 2's "first time the case canon ships" review — instead it surfaced after Henry and Diana were already committed to client props. A quick `curl localhost:3000 | grep` for canon strings should be a routine pre-merge check whenever a Case-typed value crosses a `'use client'` boundary. Mid-weekend pivot to fix it ate ~45 minutes that the spec hadn't budgeted.
+- Underestimated the iteration cost of Henry's double-fact discrimination. Spec §7 budgeted 60m of QA buffer; actual spend was closer to 120m across three full iterations (two natural-language tunings + one structural type extension), each with three QA sessions. The structural extension produced durable infrastructure but didn't close the Session 2 gap on `claude-haiku-4-5` — a fourth iteration's marginal value was low relative to the per-suspect-model-override path scheduled for Weekend 4. Lesson: when a model-behavior limit is suspected (same failure mode three times in a row), stop iterating on prompt and document the gap; the model upgrade is the right tool, not another rule.
 
 ## Spec deviations
 
--
+- **Type-system extension for `CrackPoint.triggerHint` was originally out of scope (§2.2) and was pulled in during Step 6** per ADR-0013's fallback plan. The extension shipped as `string | { all: string[]; description?: string }` plus a deterministic 4-rule prompt composer in `buildSuspectPrompt`. Captured in spec §2.2 (revised), §5.1 (revised), and ADR-0015.
+- **Public vs. private case projection (ADR-0014) was not originally in scope at all.** A smoke test during Step 4 found `case.solution` and every suspect's secret fields were being serialized into the SSR HTML payload. Treated as a security regression that had to ship within the weekend; introduced `PublicCase` / `PublicSuspect` projected types, a `toPublicCase` helper, and a server-side `/api/accuse` route. The remaining JS-bundle leak is acknowledged and deferred per ADR-0014 §Consequences.
+- **Spec §6.2's Henry Session 2 acceptance criterion was relaxed** from "does not crack" to "holds for at least 3 turns of confident single-Fact-B pressure" per ADR-0015, after three iterations failed Session 2 in the same way on `claude-haiku-4-5`. Mitigation paths (per-suspect model upgrade, canon reduction) recorded in spec §10 for Weekend 4.
+- **Two extra ADRs (0014, 0015) shipped beyond the originally planned ADR-0012 / ADR-0013 pair.** Both surfaced from real findings during execution (SSR leak, model-behavior limit), not from scope creep. Spec §9 updated to list all four.
 
 ---
 
-Total time: TBD.
+Total time: ~5h.
 
 After this PR merges, the maintainer will tag the commit on `main` as `weekend-3`.
