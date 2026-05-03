@@ -1,11 +1,11 @@
 'use client'
 
 import { Button } from '@/components/ui/button'
-import type { Case } from '@/lib/game/types'
+import type { PublicCase } from '@/lib/game/types'
 import { useGameStore } from '@/stores/game'
 
 interface OutcomeScreenProps {
-	kase: Case
+	kase: PublicCase
 	onNewInvestigation: () => void
 }
 

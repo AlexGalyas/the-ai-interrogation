@@ -1,9 +1,9 @@
 import { Button } from '@/components/ui/button'
 import { SuspectCard } from '@/features/briefing/suspect-card'
-import type { Case } from '@/lib/game/types'
+import type { PublicCase } from '@/lib/game/types'
 
 interface BriefingScreenProps {
-	kase: Case
+	kase: PublicCase
 	onBegin: () => void
 }
 

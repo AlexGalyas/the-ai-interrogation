@@ -1,11 +1,11 @@
 'use client'
 
 import { InitialAvatar } from '@/components/initial-avatar'
-import type { Suspect } from '@/lib/game/types'
+import type { PublicSuspect } from '@/lib/game/types'
 import { cn } from '@/lib/utils'
 
 interface SuspectPickerProps {
-	suspects: Suspect[]
+	suspects: PublicSuspect[]
 	selectedId: string | null
 	onSelect: (suspectId: string) => void
 }

@@ -12,12 +12,11 @@ import {
 } from '@/components/ui/dialog'
 import { Textarea } from '@/components/ui/textarea'
 import { SuspectPicker } from '@/features/accusation/suspect-picker'
-import { evaluateAccusation } from '@/lib/game/evaluate-accusation'
-import type { Accusation, Case } from '@/lib/game/types'
+import type { Accusation, AccusationResult, PublicCase } from '@/lib/game/types'
 import { useGameStore } from '@/stores/game'
 
 interface AccusationModalProps {
-	kase: Case
+	kase: PublicCase
 	open: boolean
 	onOpenChange: (open: boolean) => void
 }
@@ -48,7 +47,15 @@ export function AccusationModal({ kase, open, onOpenChange }: AccusationModalPro
 		setIsSubmitting(true)
 		try {
 			const accusation: Accusation = { suspectId: selectedSuspectId, evidence }
-			const result = evaluateAccusation(kase, accusation)
+			const response = await fetch('/api/accuse', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify(accusation)
+			})
+			if (!response.ok) {
+				throw new Error(`Accuse request failed: ${response.status}`)
+			}
+			const result = (await response.json()) as AccusationResult
 			submitAccusation(accusation, result)
 			onOpenChange(false)
 		} catch (error) {

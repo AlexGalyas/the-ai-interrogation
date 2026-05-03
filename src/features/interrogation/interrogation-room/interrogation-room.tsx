@@ -5,11 +5,11 @@ import { useEffect } from 'react'
 import { ChatView } from '@/features/interrogation/chat-view'
 import { MessageInput } from '@/features/interrogation/message-input'
 import { useInterrogate } from '@/features/interrogation/use-interrogate'
-import type { Suspect } from '@/lib/game/types'
+import type { PublicSuspect } from '@/lib/game/types'
 import { useGameStore } from '@/stores/game'
 
 interface InterrogationRoomProps {
-	suspect: Suspect
+	suspect: PublicSuspect
 	caseId: string
 }
 

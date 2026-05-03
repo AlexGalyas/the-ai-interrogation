@@ -1,8 +1,8 @@
 import { InitialAvatar } from '@/components/initial-avatar'
-import type { Suspect } from '@/lib/game/types'
+import type { PublicSuspect } from '@/lib/game/types'
 
 interface SuspectCardProps {
-	suspect: Suspect
+	suspect: PublicSuspect
 }
 
 export function SuspectCard({ suspect }: SuspectCardProps) {

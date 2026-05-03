@@ -3,11 +3,11 @@
 import { AccuseButton } from '@/features/accusation/accuse-button'
 import { InterrogationRoom } from '@/features/interrogation/interrogation-room'
 import { SuspectTabs } from '@/features/interrogation/suspect-tabs'
-import type { Case } from '@/lib/game/types'
+import type { PublicCase } from '@/lib/game/types'
 import { useGameStore } from '@/stores/game'
 
 interface InvestigationScreenProps {
-	kase: Case
+	kase: PublicCase
 	onAccuse: () => void
 }
 
