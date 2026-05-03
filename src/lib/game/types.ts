@@ -1,8 +1,26 @@
+/**
+ * Structured trigger that fires only when ALL listed facts are surfaced by the
+ * interrogator (in the same exchange or within 1–2 consecutive turns). Used for
+ * suspects whose crack point requires conjunction discrimination — single-fact
+ * pressure must not crack them. See ADR-0013 (and its supersession).
+ */
+export interface ConjunctiveCrackTrigger {
+	/** All facts that must be raised together. Order does not matter. */
+	all: string[]
+	/** Optional confession-tone guidance composed into the prompt after the rules. */
+	description?: string
+}
+
 export interface CrackPoint {
 	/** Human-readable description for documentation; not used in prompt. */
 	description: string
-	/** Hint to the model on what triggers the break. Embedded into the system prompt. */
-	triggerHint: string
+	/**
+	 * Hint to the model on what triggers the break. Embedded into the system prompt.
+	 * - String form: single-fact crack — model sees the natural-language hint as-is.
+	 * - Conjunctive form: multi-fact AND-discrimination — `buildSuspectPrompt`
+	 *   composes deterministic IF/ELSE deflection rules and the confession trigger.
+	 */
+	triggerHint: string | ConjunctiveCrackTrigger
 }
 
 export interface Suspect {

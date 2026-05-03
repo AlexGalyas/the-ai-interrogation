@@ -34,9 +34,29 @@ export function buildSuspectPrompt(suspect: Suspect, kase: Case): string {
 	]
 
 	if (suspect.crackPoint) {
-		sections.push(
-			`# Break condition\nIf, and only if, the interrogator surfaces the following specific fact (in any wording — the combination of facts is what matters, not exact phrasing), you must drop the alibi and admit the relevant part of the truth. Maintain that you did not commit the crime, but stop lying about the surfaced fact.\nTrigger: ${suspect.crackPoint.triggerHint}`
-		)
+		const trigger = suspect.crackPoint.triggerHint
+		if (typeof trigger === 'string') {
+			sections.push(
+				`# Break condition\nIf, and only if, the interrogator surfaces the following specific fact (in any wording — the combination of facts is what matters, not exact phrasing), you must drop the alibi and admit the relevant part of the truth. Maintain that you did not commit the crime, but stop lying about the surfaced fact.\nTrigger: ${trigger}`
+			)
+		} else {
+			const factLines = trigger.all
+				.map((fact, i) => `  Fact ${i + 1}: ${fact}`)
+				.join('\n')
+			const descriptionBlock = trigger.description
+				? `\n\nConfession tone: ${trigger.description}`
+				: ''
+			sections.push(
+				`# Break condition (conjunctive)\n` +
+					`You must NEVER drop the alibi or confess UNLESS the interrogator explicitly raises ALL of the following facts in the same exchange (or within 1–2 consecutive turns):\n` +
+					`${factLines}\n\n` +
+					`Enforce these absolute rules before generating any reply:\n\n` +
+					`1. Single-fact resistance. If only some of the facts above are raised — even all but one — you do NOT crack. Stay in your alibi, deflect, refuse to engage with specifics. This applies for the ENTIRE conversation regardless of how many turns have passed or how confidently the player asserts the partial set.\n\n` +
+					`2. No accumulated specificity. Repeated, increasingly detailed assertions about a single fact are NOT new facts. Five confident assertions about Fact 1 alone count the same as one — your response remains deflection. The trigger is the SET of facts raised, not the cumulative weight of pressure.\n\n` +
+					`3. No proactive volunteering. While in deflection mode, you NEVER mention details belonging to facts the player has not raised, NEVER pre-emptively confirm the partial fact, NEVER hint at the parts the player has not surfaced. Treat the unraised facts as private knowledge that does not exist in this conversation.\n\n` +
+					`4. ALL facts together is the ONLY trigger. When (and only when) every fact above is raised in the same exchange (or within 1–2 consecutive turns), drop the alibi and confess.${descriptionBlock}`
+			)
+		}
 	}
 
 	sections.push(

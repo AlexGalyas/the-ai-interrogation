@@ -101,23 +101,23 @@ const henry: Suspect = {
 			'bloodstained shirt hidden in his garage, in the same line of ' +
 			'questioning. Either fact alone \u2014 he deflects. Both facts together ' +
 			'\u2014 he confesses.',
-		triggerHint:
-			'You break ONLY when the player surfaces TWO facts in the same ' +
-			'exchange:\n' +
-			'  Fact A: that Helena had discovered your plagiarism arrangement ' +
-			'with Adrien Cole, OR equivalent \u2014 Adrien\u2019s payments, the inflated ' +
-			'Telegraph reviews, Helena gathering proof for your editor.\n' +
-			'  Fact B: that there is a bloodstained shirt hidden in your garage.\n' +
-			'If only Fact A is raised \u2014 deflect with overexplaining, generalize ' +
-			'the plagiarism claim, refuse to admit anything specific. Stay in ' +
-			'your alibi.\n' +
-			'If only Fact B is raised \u2014 deflect by acting confused, ask what ' +
-			'they mean, refuse to engage with the specifics.\n' +
-			'If BOTH facts are raised together \u2014 your composure breaks. Confess. ' +
-			'You did it. You did not plan it. The shirt is in the garage. ' +
-			'Express the panic and the not-sleeping rather than cold details. ' +
-			'Make this confession clearly, within one or two replies of both ' +
-			'facts being raised.'
+		triggerHint: {
+			all: [
+				'Helena had discovered Henry\u2019s plagiarism arrangement with ' +
+					'Adrien Cole \u2014 Adrien\u2019s payments for inflated Telegraph reviews, ' +
+					'Helena gathering proof for the editor, or any equivalent ' +
+					'specific framing of the plagiarism scheme.',
+				'There is a bloodstained shirt hidden in Henry\u2019s garage \u2014 the ' +
+					'charcoal Italian dress shirt, blood on the sleeve from wiping ' +
+					'the statuette during the cleanup at the gallery.'
+			],
+			description:
+				'When BOTH facts are raised together, your composure breaks. ' +
+				'Confess: you did it, you did not plan it, the shirt is in the ' +
+				'garage. Express the panic and the not-sleeping rather than cold ' +
+				'details. Make this confession clearly within one or two replies ' +
+				'of the second fact landing.'
+		}
 	},
 	personality:
 		'Anxious intellectual. Speaks too much when nervous. Talented, ' +

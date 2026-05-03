@@ -5,6 +5,7 @@ import { buildSuspectPrompt } from '@/lib/game/build-suspect-prompt'
 import type { Suspect } from '@/lib/game/types'
 
 const marcus = caseSohoGallery.suspects[0]
+const henry = caseSohoGallery.suspects[1]
 
 describe('buildSuspectPrompt', () => {
 	it('produces the same output for the same input (deterministic)', () => {
@@ -35,10 +36,30 @@ describe('buildSuspectPrompt', () => {
 		}
 	})
 
-	it('contains the crackPoint.triggerHint', () => {
+	it('embeds string-form triggerHint verbatim for single-fact suspects', () => {
 		const prompt = buildSuspectPrompt(marcus, caseSohoGallery)
 		expect(marcus.crackPoint).toBeDefined()
-		expect(prompt).toContain(marcus.crackPoint!.triggerHint)
+		const trigger = marcus.crackPoint!.triggerHint
+		expect(typeof trigger).toBe('string')
+		expect(prompt).toContain(trigger as string)
+	})
+
+	it('renders conjunctive triggerHint with every fact and the discrimination rules', () => {
+		const prompt = buildSuspectPrompt(henry, caseSohoGallery)
+		expect(henry.crackPoint).toBeDefined()
+		const trigger = henry.crackPoint!.triggerHint
+		expect(typeof trigger).toBe('object')
+		if (typeof trigger === 'string') throw new Error('expected conjunctive form')
+		for (const fact of trigger.all) {
+			expect(prompt).toContain(fact)
+		}
+		if (trigger.description) {
+			expect(prompt).toContain(trigger.description)
+		}
+		expect(prompt).toContain('Single-fact resistance')
+		expect(prompt).toContain('No accumulated specificity')
+		expect(prompt).toContain('No proactive volunteering')
+		expect(prompt).toContain('ALL facts together is the ONLY trigger')
 	})
 
 	it('contains the anti-jailbreak section', () => {
@@ -63,7 +84,9 @@ describe('buildSuspectPrompt', () => {
 
 		const prompt = buildSuspectPrompt(suspectWithoutCrack, kase)
 
-		expect(prompt).not.toContain(marcus.crackPoint!.triggerHint)
+		const marcusTrigger = marcus.crackPoint!.triggerHint
+		expect(typeof marcusTrigger).toBe('string')
+		expect(prompt).not.toContain(marcusTrigger as string)
 		expect(prompt).not.toMatch(/break condition/i)
 		expect(prompt).not.toMatch(/break[\s-]*condition\s*:?\s*none/i)
 	})
