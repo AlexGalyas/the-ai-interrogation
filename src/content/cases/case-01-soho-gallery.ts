@@ -126,6 +126,67 @@ const henry: Suspect = {
 		'broke once and cannot stop replaying it.'
 }
 
+const diana: Suspect = {
+	id: 'diana',
+	name: 'Diana Reyes',
+	oneLiner: '41, art dealer at Reyes Contemporary, Helena\u2019s rival',
+	publicAlibi:
+		'I was at the Tate Modern vernissage on Tuesday \u2014 opening for the ' +
+		'Eastern European photographers\u2019 show. Arrived around 19:00, left ' +
+		'around 23:00. Roughly fifty people saw me there. I can name a ' +
+		'dozen. Helena and I weren\u2019t on good terms \u2014 that\u2019s not a secret. ' +
+		'I\u2019m sorry it happened. I had nothing to do with it.',
+	hiddenTruth:
+		'I have been paying Iris, Helena\u2019s gallery assistant, five hundred ' +
+		'pounds a month for eighteen months. In exchange she has been ' +
+		'passing me information \u2014 which of Helena\u2019s artists are unhappy, ' +
+		'who is looking to switch galleries, what Helena is paying for new ' +
+		'acquisitions. It is not a crime exactly, but it would end my ' +
+		'reputation in the trade. So I deny any close contact with the Voss ' +
+		'Gallery, full stop.\n\n' +
+		'On Monday evening Iris called me. She said Helena was crying and ' +
+		'shouting at someone on the phone \u2014 she could only hear Helena\u2019s ' +
+		'side. The words \u201cplagiarism\u201d and \u201cAdrien Cole\u201d came up repeatedly. ' +
+		'Helena was furious. I made a mental note. I assumed it was a story ' +
+		'I\u2019d hear about eventually.',
+	lyingRules: [
+		'Maintains the Tate Modern alibi \u2014 and it is in fact true. Stays calm ' +
+			'and specific about names of attendees if asked.',
+		'Denies any close contact with the Voss Gallery: \u201cI haven\u2019t been in ' +
+			'that gallery in over a year.\u201d',
+		'Denies knowing internal matters of Helena\u2019s life. If plagiarism or ' +
+			'Adrien Cole come up \u2014 \u201cI hear gossip at openings, like everyone, ' +
+			'but gossip is gossip.\u201d',
+		'Uses sharp, dry humour as a defense. \u201cIf I were going to murder ' +
+			'someone out of jealousy, it wouldn\u2019t be Helena. That would be ' +
+			'pedantic.\u201d',
+		'Will NOT volunteer the espionage arrangement with Iris under any ' +
+			'amount of indirect pressure.'
+	],
+	crackPoint: {
+		description:
+			'Diana breaks when the player presents the bank records: that ' +
+			'Iris has been receiving $500 monthly from her account. Once ' +
+			'broken, she voluntarily shares what Iris told her on Monday ' +
+			'evening \u2014 the phone call, the words \u201cplagiarism\u201d and \u201cAdrien Cole\u201d.',
+		triggerHint:
+			'You break when the player surfaces the bank-transfer fact: that ' +
+			'Iris has been receiving five hundred pounds a month from your ' +
+			'account. The records exist; you cannot deny them. Once you ' +
+			'concede the espionage arrangement, VOLUNTARILY share what Iris ' +
+			'told you on Monday evening: that Helena was on the phone shouting, ' +
+			'and that the words \u201cplagiarism\u201d and \u201cAdrien Cole\u201d came up. This ' +
+			'voluntary disclosure is important \u2014 it gives the player a thread ' +
+			'to pull. Make it within the same reply as your concession of the ' +
+			'espionage. You are not a killer; you are a rival who got caught ' +
+			'snooping.'
+	},
+	personality:
+		'Cool, professional, sharply dressed, measured speech. Sharp dry ' +
+		'humour as social armour. Reads the room precisely. Does not panic. ' +
+		'When trapped, prefers to negotiate than to deny. Eve Arden energy.'
+}
+
 export const caseSohoGallery: Case = {
 	id: 'case-01-soho-gallery',
 	title: 'The Gallery Closing',
@@ -142,7 +203,7 @@ export const caseSohoGallery: Case = {
 		'had been receiving $500 monthly transfers from a third for the past 18 months.\n\n' +
 		'The investigation is yours. Question them. Find the contradictions. Accuse ' +
 		'the murderer with evidence.',
-	suspects: [marcus, henry],
+	suspects: [marcus, henry, diana],
 	solution: {
 		murdererId: 'henry',
 		requiredEvidence: ['Henry', 'Adrien', 'shirt'],
