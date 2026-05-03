@@ -1,7 +1,7 @@
-import type { Suspect } from '@/lib/game/types'
+import type { PublicSuspect } from '@/lib/game/types'
 
 interface SuspectTopBarProps {
-	suspect: Suspect
+	suspect: PublicSuspect
 }
 
 function initialsFor(name: string): string {

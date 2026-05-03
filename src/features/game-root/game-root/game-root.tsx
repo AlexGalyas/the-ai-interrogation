@@ -6,11 +6,11 @@ import { AccusationModal } from '@/features/accusation/accusation-modal'
 import { BriefingScreen } from '@/features/briefing/briefing-screen'
 import { InvestigationScreen } from '@/features/interrogation/investigation-screen'
 import { OutcomeScreen } from '@/features/outcome/outcome-screen'
-import type { Case } from '@/lib/game/types'
+import type { PublicCase } from '@/lib/game/types'
 import { deriveScreen, useGameStore } from '@/stores/game'
 
 interface GameRootProps {
-	kase: Case
+	kase: PublicCase
 }
 
 export function GameRoot({ kase }: GameRootProps) {

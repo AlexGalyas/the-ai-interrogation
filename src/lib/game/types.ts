@@ -39,6 +39,30 @@ export interface Case {
 	solution: CaseSolution
 }
 
+/**
+ * Client-safe projection of a `Suspect`. Excludes `publicAlibi`, `hiddenTruth`,
+ * `lyingRules`, `crackPoint`, and `personality` — those fields belong to the
+ * server-side prompt builder and would leak the murder solution if shipped to
+ * the browser. See ADR-0014.
+ */
+export interface PublicSuspect {
+	id: string
+	name: string
+	oneLiner: string
+}
+
+/**
+ * Client-safe projection of a `Case`. Excludes `solution` (which contains
+ * `requiredEvidence` keywords that double as a hint sheet) and uses
+ * `PublicSuspect[]` for `suspects`. See ADR-0014.
+ */
+export interface PublicCase {
+	id: string
+	title: string
+	premise: string
+	suspects: PublicSuspect[]
+}
+
 export interface Accusation {
 	suspectId: string
 	evidence: string

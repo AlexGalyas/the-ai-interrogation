@@ -2,7 +2,8 @@ import { create } from 'zustand'
 import { createJSONStorage, persist } from 'zustand/middleware'
 
 import { caseSohoGallery } from '@/content/cases/case-01-soho-gallery'
-import type { Accusation, AccusationResult, Case } from '@/lib/game/types'
+import { toPublicCase } from '@/lib/game/to-public-case'
+import type { Accusation, AccusationResult, PublicCase } from '@/lib/game/types'
 
 export interface Message {
 	id: string
@@ -29,10 +30,11 @@ export type Screen = 'briefing' | 'investigation' | 'outcome'
 
 export const STORAGE_KEY = 'the-ai-interrogation:game:v1'
 const STORAGE_VERSION = 1
-const DEFAULT_CASE_ID = caseSohoGallery.id
+const PUBLIC_SOHO_GALLERY = toPublicCase(caseSohoGallery)
+const DEFAULT_CASE_ID = PUBLIC_SOHO_GALLERY.id
 
-const CASES_BY_ID: Record<string, Case> = {
-	[caseSohoGallery.id]: caseSohoGallery
+const CASES_BY_ID: Record<string, PublicCase> = {
+	[PUBLIC_SOHO_GALLERY.id]: PUBLIC_SOHO_GALLERY
 }
 
 export interface GameState {
@@ -60,7 +62,7 @@ function generateId(): string {
 	return `${Date.now()}-${Math.random().toString(36).slice(2)}`
 }
 
-function lookupCase(caseId: string): Case {
+function lookupCase(caseId: string): PublicCase {
 	const caseDef = CASES_BY_ID[caseId]
 	if (!caseDef) {
 		throw new Error(`Unknown case id: ${caseId}`)
@@ -68,7 +70,7 @@ function lookupCase(caseId: string): Case {
 	return caseDef
 }
 
-function blankProgress(caseDef: Case, hasBegun: boolean): CaseProgress {
+function blankProgress(caseDef: PublicCase, hasBegun: boolean): CaseProgress {
 	const firstSuspectId = caseDef.suspects[0]?.id
 	if (!firstSuspectId) {
 		throw new Error(`Case ${caseDef.id} has no suspects.`)
