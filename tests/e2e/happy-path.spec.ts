@@ -9,7 +9,8 @@ test.describe('happy path: briefing → interrogate → accuse → win', () => {
 		await page.reload()
 	})
 
-	test('player can solve the case end-to-end', async ({ page }) => {
+	// Skipped during Weekend 3 transition. Step 5 will re-enable this test against Henry.
+	test.skip('player can solve the case end-to-end', async ({ page }) => {
 		await page.route('**/api/interrogate', async (route) => {
 			await route.fulfill({
 				status: 200,

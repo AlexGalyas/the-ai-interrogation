@@ -11,14 +11,15 @@ describe('evaluateAccusation', () => {
 	it('returns isCorrect=true when suspect matches and all evidence keywords are present', () => {
 		const accusation: Accusation = {
 			suspectId: murdererId,
-			evidence: 'A witness saw his car parked near the gallery at 21:30.'
+			evidence:
+				'Henry was sleeping with Adrien Cole and there is a bloodstained shirt in his garage.'
 		}
 
 		const result = evaluateAccusation(caseSohoGallery, accusation)
 
 		expect(result).toEqual({
 			isCorrect: true,
-			matchedEvidence: ['car', 'gallery', '21:30'],
+			matchedEvidence: ['Henry', 'Adrien', 'shirt'],
 			missingEvidence: []
 		})
 	})
@@ -26,14 +27,14 @@ describe('evaluateAccusation', () => {
 	it('matches evidence keywords case-insensitively', () => {
 		const accusation: Accusation = {
 			suspectId: murdererId,
-			evidence: 'The CAR was at the GALLERY around 21:30.'
+			evidence: 'HENRY was paying ADRIEN, and the SHIRT is in the garage.'
 		}
 
 		const result = evaluateAccusation(caseSohoGallery, accusation)
 
 		expect(result).toEqual({
 			isCorrect: true,
-			matchedEvidence: ['car', 'gallery', '21:30'],
+			matchedEvidence: ['Henry', 'Adrien', 'shirt'],
 			missingEvidence: []
 		})
 	})
@@ -41,15 +42,15 @@ describe('evaluateAccusation', () => {
 	it('returns isCorrect=false when one required keyword is missing', () => {
 		const accusation: Accusation = {
 			suspectId: murdererId,
-			evidence: 'His car was seen at the gallery that night.'
+			evidence: 'Henry killed her because of his arrangement with Adrien Cole.'
 		}
 
 		const result = evaluateAccusation(caseSohoGallery, accusation)
 
 		expect(result).toEqual({
 			isCorrect: false,
-			matchedEvidence: ['car', 'gallery'],
-			missingEvidence: ['21:30']
+			matchedEvidence: ['Henry', 'Adrien'],
+			missingEvidence: ['shirt']
 		})
 	})
 
@@ -57,24 +58,25 @@ describe('evaluateAccusation', () => {
 		const accusation: Accusation = {
 			suspectId: murdererId,
 			evidence:
-				'I think the painter is nervous, and frankly his alibi about Hackney is shaky. ' +
-				'A neighbour spotted his car on Greek Street near the gallery around 21:30, ' +
-				'which contradicts everything he told us.'
+				'I think the critic is anxious, and frankly his alibi about being home all evening is shaky. ' +
+				'Henry found out Helena was about to expose his deal with Adrien Cole, and the bloodstained ' +
+				'shirt is still hidden in his garage \u2014 he could not bring himself to dispose of it.'
 		}
 
 		const result = evaluateAccusation(caseSohoGallery, accusation)
 
 		expect(result).toEqual({
 			isCorrect: true,
-			matchedEvidence: ['car', 'gallery', '21:30'],
+			matchedEvidence: ['Henry', 'Adrien', 'shirt'],
 			missingEvidence: []
 		})
 	})
 
 	it('returns isCorrect=false with full missingEvidence when accusing the wrong suspect even if keywords are present', () => {
 		const accusation: Accusation = {
-			suspectId: 'fake-suspect-id',
-			evidence: 'A witness saw his car parked near the gallery at 21:30.'
+			suspectId: 'marcus',
+			evidence:
+				'Henry was sleeping with Adrien Cole and there is a bloodstained shirt in his garage.'
 		}
 
 		const result = evaluateAccusation(caseSohoGallery, accusation)
@@ -88,7 +90,7 @@ describe('evaluateAccusation', () => {
 
 	it('returns isCorrect=false with full missingEvidence when accusing the wrong suspect with no keywords', () => {
 		const accusation: Accusation = {
-			suspectId: 'fake-suspect-id',
+			suspectId: 'marcus',
 			evidence: 'Just a hunch, really.'
 		}
 
@@ -119,7 +121,8 @@ describe('evaluateAccusation', () => {
 	it('is deterministic — repeated calls with identical inputs produce equal results', () => {
 		const accusation: Accusation = {
 			suspectId: murdererId,
-			evidence: 'A witness saw his car parked near the gallery at 21:30.'
+			evidence:
+				'Henry was sleeping with Adrien Cole and there is a bloodstained shirt in his garage.'
 		}
 
 		const result1 = evaluateAccusation(caseSohoGallery, accusation)
