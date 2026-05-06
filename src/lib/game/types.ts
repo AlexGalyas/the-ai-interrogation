@@ -23,6 +23,20 @@ export interface CrackPoint {
 	triggerHint: string | ConjunctiveCrackTrigger
 }
 
+/**
+ * Frontend-only nervousness mechanic config (see ADR-0017). When the player's
+ * message contains any of `keywords` (case-insensitive substring match), the
+ * suspect's nervousness value is increased by `increment` per match (capped at
+ * 100). When no keywords match, nervousness decays. The keywords are scanned
+ * client-side; no API or model changes are involved.
+ */
+export interface NervousnessTriggers {
+	/** Case-insensitive substrings checked against player messages. */
+	keywords: string[]
+	/** How much to add per match. Capped at 100 in aggregate. */
+	increment: number
+}
+
 export interface Suspect {
 	id: string
 	name: string
@@ -32,6 +46,11 @@ export interface Suspect {
 	lyingRules: string[]
 	crackPoint?: CrackPoint
 	personality: string
+	/**
+	 * Optional. If absent, the suspect has no jitter behaviour and nervousness
+	 * stays at 0. Backwards-compatible with pre-W4 suspect data.
+	 */
+	nervousnessTriggers?: NervousnessTriggers
 }
 
 export interface CaseSolution {

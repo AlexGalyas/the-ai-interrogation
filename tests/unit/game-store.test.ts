@@ -62,7 +62,7 @@ describe('useGameStore', () => {
 		const id = store.startAssistantMessage(MARCUS_ID)
 		const progress = useGameStore.getState().getCurrentProgress()
 		expect(progress.messagesBySuspect[MARCUS_ID]).toEqual([
-			{ id, role: 'assistant', content: '' }
+			{ id, role: 'assistant', content: '', displayedContent: '' }
 		])
 		expect(progress.isStreamingBySuspect[MARCUS_ID]).toBe(true)
 	})
@@ -138,7 +138,8 @@ describe('deriveScreen', () => {
 				messagesBySuspect: {},
 				isStreamingBySuspect: {},
 				activeSuspectId: MARCUS_ID,
-				accusation: null
+				accusation: null,
+				nervousnessBySuspect: {}
 			})
 		).toBe('briefing')
 	})
@@ -150,7 +151,8 @@ describe('deriveScreen', () => {
 				messagesBySuspect: {},
 				isStreamingBySuspect: {},
 				activeSuspectId: MARCUS_ID,
-				accusation: null
+				accusation: null,
+				nervousnessBySuspect: {}
 			})
 		).toBe('investigation')
 	})
@@ -167,7 +169,8 @@ describe('deriveScreen', () => {
 					evidence: 'x',
 					result: { isCorrect: false, matchedEvidence: [], missingEvidence: [] },
 					submittedAt: '2026-04-30T00:00:00Z'
-				}
+				},
+				nervousnessBySuspect: {}
 			})
 		).toBe('outcome')
 	})
