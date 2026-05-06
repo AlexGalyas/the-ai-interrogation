@@ -1,8 +1,7 @@
 'use client'
 
 import { Button } from '@/components/ui/button'
-import { TypingIndicator } from '@/features/interrogation/typing-indicator'
-import { cn } from '@/lib/utils'
+import { ChatMessage } from '@/features/interrogation/chat-message'
 import { useGameStore, type Message } from '@/stores/game'
 
 interface ChatViewProps {
@@ -13,28 +12,16 @@ interface ChatViewProps {
 
 const EMPTY_MESSAGES: Message[] = []
 
-function isPendingAssistant(
-	message: Message,
-	index: number,
-	total: number,
-	isStreaming: boolean
-): boolean {
-	return (
-		isStreaming && message.role === 'assistant' && message.content === '' && index === total - 1
-	)
-}
-
 export function ChatView({ suspectName, error, onRetry }: ChatViewProps) {
+	const suspectId = useGameStore((state) => {
+		const progress = state.progressByCase[state.currentCaseId]
+		return progress?.activeSuspectId
+	})
 	const messages =
 		useGameStore((state) => {
 			const progress = state.progressByCase[state.currentCaseId]
 			return progress?.messagesBySuspect[progress.activeSuspectId]
 		}) ?? EMPTY_MESSAGES
-	const isStreaming = useGameStore((state) => {
-		const progress = state.progressByCase[state.currentCaseId]
-		if (!progress) return false
-		return progress.isStreamingBySuspect[progress.activeSuspectId] ?? false
-	})
 
 	const isEmpty = messages.length === 0 && !error
 
@@ -48,35 +35,14 @@ export function ChatView({ suspectName, error, onRetry }: ChatViewProps) {
 				</div>
 			) : (
 				<>
-					{messages.map((message, index) => (
-						<div
-							key={message.id}
-							className={cn(
-								'flex w-full',
-								message.role === 'user' ? 'justify-end' : 'justify-start'
-							)}
-						>
-							<div
-								className={cn(
-									'max-w-[80%] whitespace-pre-wrap rounded-2xl px-4 py-2 text-sm leading-relaxed',
-									message.role === 'user'
-										? 'bg-primary font-sans text-primary-foreground'
-										: 'bg-muted font-mono text-foreground'
-								)}
-							>
-								{isPendingAssistant(
-									message,
-									index,
-									messages.length,
-									isStreaming
-								) ? (
-									<TypingIndicator />
-								) : (
-									message.content
-								)}
-							</div>
-						</div>
-					))}
+					{suspectId &&
+						messages.map((message) => (
+							<ChatMessage
+								key={message.id}
+								suspectId={suspectId}
+								messageId={message.id}
+							/>
+						))}
 
 					{error && (
 						<div role="alert" className="flex w-full justify-center">
