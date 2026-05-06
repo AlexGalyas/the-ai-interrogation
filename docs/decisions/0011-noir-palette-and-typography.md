@@ -1,6 +1,6 @@
 # ADR-0011: Noir Palette, Three-Role Typography, Dark-Only
 
-**Status:** Accepted
+**Status:** Accepted; partially superseded by ADR-0016 (CSS-only interactions clause only — Motion library admitted for the accusation modal animation in Weekend 4; CSS-only rule remains binding for all non-Weekend-4 components, and the noir palette / three-role typography / dark-only commitments are unaffected)
 **Date:** 2026-05-02
 
 ## Context
