@@ -945,7 +945,7 @@ The agent updates this table after closing each task. Status starts as `Not star
 
 | # | Task | Status | PR | Files changed | Verified by | Notes |
 |---|---|---|---|---|---|---|
-| 1 | Spec + ADRs + journal stub | Done | (set on PR open) | docs/specs/weekend-4-atmosphere.md, docs/decisions/0011-noir-palette-and-typography.md, docs/decisions/0016-weekend-4-atmosphere-and-motion-library.md, docs/decisions/0017-text-jitter-mechanic.md, docs/journal/weekend-4.md | automatic | ADR numbers used: 0016 (atmosphere + Motion admission, partially supersedes ADR-0011's CSS-only clause) and 0017 (text jitter mechanic). ADR-0011 status header rewritten in place per §10's "only its Status header line" constraint — cross-reference embedded in the Status line itself rather than as a separate field. No deviations from spec scope; no code touched. |
+| 1 | Spec + ADRs + journal stub | Done | [#32](https://github.com/AlexGalyas/the-ai-interrogation/pull/32) | docs/specs/weekend-4-atmosphere.md, docs/decisions/0011-noir-palette-and-typography.md, docs/decisions/0016-weekend-4-atmosphere-and-motion-library.md, docs/decisions/0017-text-jitter-mechanic.md, docs/journal/weekend-4.md | automatic | ADR numbers used: 0016 (atmosphere + Motion admission, partially supersedes ADR-0011's CSS-only clause) and 0017 (text jitter mechanic). ADR-0011 status header rewritten in place per §10's "only its Status header line" constraint — cross-reference embedded in the Status line itself rather than as a separate field. No deviations from spec scope; no code touched. |
 | 2 | Storage migration + state extensions | Not started | — | — | — | — |
 | 3 | Char-by-char typewriter rendering | Not started | — | — | — | — |
 | 4 | Grain overlay | Not started | — | — | — | — |
