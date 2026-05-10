@@ -1,5 +1,6 @@
 'use client'
 
+import { JitteringText } from '@/components/jittering-text'
 import { TypingIndicator } from '@/features/interrogation/typing-indicator'
 import { useTypewriter } from '@/features/interrogation/use-typewriter'
 import { cn } from '@/lib/utils'
@@ -8,9 +9,17 @@ import { useGameStore } from '@/stores/game'
 interface ChatMessageProps {
 	suspectId: string
 	messageId: string
+	/**
+	 * True only for the most recent assistant message in the conversation.
+	 * Jitter is applied exclusively to this one — past replies were recorded at
+	 * earlier nervousness levels and shouldn't retroactively start shaking when
+	 * the player presses a trigger word now (per maintainer feedback during W4
+	 * QA / spec §7.5 revision).
+	 */
+	isLatestAssistant: boolean
 }
 
-export function ChatMessage({ suspectId, messageId }: ChatMessageProps) {
+export function ChatMessage({ suspectId, messageId, isLatestAssistant }: ChatMessageProps) {
 	const message = useGameStore((state) => {
 		const progress = state.progressByCase[state.currentCaseId]
 		return progress?.messagesBySuspect[suspectId]?.find((m) => m.id === messageId)
@@ -18,6 +27,10 @@ export function ChatMessage({ suspectId, messageId }: ChatMessageProps) {
 	const isStreaming = useGameStore((state) => {
 		const progress = state.progressByCase[state.currentCaseId]
 		return progress?.isStreamingBySuspect[suspectId] ?? false
+	})
+	const nervousness = useGameStore((state) => {
+		const progress = state.progressByCase[state.currentCaseId]
+		return progress?.nervousnessBySuspect[suspectId] ?? 0
 	})
 	const skipTypewriter = useGameStore((state) => state.skipTypewriter)
 
@@ -47,7 +60,13 @@ export function ChatMessage({ suspectId, messageId }: ChatMessageProps) {
 						: 'bg-muted font-mono text-foreground'
 				)}
 			>
-				{showTypingIndicator ? <TypingIndicator /> : renderedContent}
+				{showTypingIndicator ? (
+					<TypingIndicator />
+				) : isAssistant && isLatestAssistant ? (
+					<JitteringText nervousness={nervousness}>{renderedContent}</JitteringText>
+				) : (
+					renderedContent
+				)}
 			</div>
 
 			{showSkip && (

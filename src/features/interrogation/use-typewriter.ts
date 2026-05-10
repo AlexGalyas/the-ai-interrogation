@@ -4,8 +4,15 @@ import { useEffect } from 'react'
 
 import { useGameStore } from '@/stores/game'
 
-/** Per-character interval (per spec §3.1 — Disco Elysium pacing). */
-export const TYPEWRITER_INTERVAL_MS = 45
+/**
+ * Per-character interval. Spec §3.1 originally specified 45ms (Disco Elysium
+ * pacing); maintainer dialled this down twice during W4 manual QA — first to
+ * 25ms, then to 18ms (~55 chars/sec) because long replies still felt slow.
+ * 18ms is fast enough to read as "smooth typewriter" rather than per-character
+ * draw, but still preserves a visible left-to-right reveal. Spec §3.1 + §12
+ * row 5 record the deviation.
+ */
+export const TYPEWRITER_INTERVAL_MS = 18
 
 function readMessage(suspectId: string, messageId: string) {
 	const state = useGameStore.getState()

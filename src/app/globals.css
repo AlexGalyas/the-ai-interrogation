@@ -154,6 +154,49 @@
 	mix-blend-mode: overlay;
 }
 
+@keyframes jitter {
+	0%,
+	100% {
+		transform: translate(0, 0);
+	}
+	25% {
+		transform: translate(calc(var(--jitter-intensity) * -1px), 0);
+	}
+	50% {
+		transform: translate(0, calc(var(--jitter-intensity) * 0.5px));
+	}
+	75% {
+		transform: translate(calc(var(--jitter-intensity) * 0.5px), 0);
+	}
+}
+
+.jitter-low,
+.jitter-mid,
+.jitter-high {
+	display: inline-block;
+	animation: jitter 0.15s steps(4) infinite;
+}
+
+.jitter-low {
+	--jitter-intensity: 0.5;
+}
+
+.jitter-mid {
+	--jitter-intensity: 1;
+}
+
+.jitter-high {
+	--jitter-intensity: 1.5;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.jitter-low,
+	.jitter-mid,
+	.jitter-high {
+		animation: none;
+	}
+}
+
 @keyframes dot-pulse {
 	0%,
 	60%,
