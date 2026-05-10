@@ -1,5 +1,7 @@
 import type { Metadata } from 'next'
 import { Crimson_Text, Geist, Geist_Mono } from 'next/font/google'
+
+import { GrainOverlay } from '@/components/grain-overlay'
 import './globals.css'
 
 const geistSans = Geist({
@@ -34,7 +36,10 @@ export default function RootLayout({
 			lang="en"
 			className={`dark ${geistSans.variable} ${geistMono.variable} ${crimsonText.variable} h-full antialiased`}
 		>
-			<body className="min-h-full flex flex-col">{children}</body>
+			<body className="min-h-full flex flex-col">
+				<GrainOverlay />
+				{children}
+			</body>
 		</html>
 	)
 }
