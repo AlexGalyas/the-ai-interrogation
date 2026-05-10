@@ -25,6 +25,14 @@ export function ChatView({ suspectName, error, onRetry }: ChatViewProps) {
 
 	const isEmpty = messages.length === 0 && !error
 
+	let lastAssistantIndex = -1
+	for (let i = messages.length - 1; i >= 0; i -= 1) {
+		if (messages[i].role === 'assistant') {
+			lastAssistantIndex = i
+			break
+		}
+	}
+
 	return (
 		<div className="flex flex-1 flex-col gap-3 overflow-y-auto px-6 py-6">
 			{isEmpty ? (
@@ -36,11 +44,12 @@ export function ChatView({ suspectName, error, onRetry }: ChatViewProps) {
 			) : (
 				<>
 					{suspectId &&
-						messages.map((message) => (
+						messages.map((message, index) => (
 							<ChatMessage
 								key={message.id}
 								suspectId={suspectId}
 								messageId={message.id}
+								isLatestAssistant={index === lastAssistantIndex}
 							/>
 						))}
 

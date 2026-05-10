@@ -45,7 +45,11 @@ const marcus: Suspect = {
 	personality:
 		'Nervous, fast-talking, deflects with self-deprecating humour about ' +
 		'being a \u201cbroke artist\u201d. Educated, references painters. Hates being ' +
-		'told what to do. When cornered, talks more, not less.'
+		'told what to do. When cornered, talks more, not less.',
+	nervousnessTriggers: {
+		keywords: ['key', 'gallery', '21:30', '22:00', 'car', 'Civic'],
+		increment: 15
+	}
 }
 
 const henry: Suspect = {
@@ -123,7 +127,20 @@ const henry: Suspect = {
 		'Anxious intellectual. Speaks too much when nervous. Talented, ' +
 		'perfectionist, easily destabilized. Cites art history. Charming ' +
 		'on the surface, fragile underneath. Not a sociopath \u2014 a man who ' +
-		'broke once and cannot stop replaying it.'
+		'broke once and cannot stop replaying it.',
+	nervousnessTriggers: {
+		keywords: [
+			'Adrien',
+			'plagiarism',
+			'shirt',
+			'garage',
+			'blood',
+			'bronze',
+			'statuette',
+			'Telegraph editor'
+		],
+		increment: 25
+	}
 }
 
 const diana: Suspect = {
@@ -184,7 +201,11 @@ const diana: Suspect = {
 	personality:
 		'Cool, professional, sharply dressed, measured speech. Sharp dry ' +
 		'humour as social armour. Reads the room precisely. Does not panic. ' +
-		'When trapped, prefers to negotiate than to deny. Eve Arden energy.'
+		'When trapped, prefers to negotiate than to deny. Eve Arden energy.',
+	nervousnessTriggers: {
+		keywords: ['Iris', 'bank', 'transfer', 'five hundred', 'espionage'],
+		increment: 10
+	}
 }
 
 export const caseSohoGallery: Case = {
