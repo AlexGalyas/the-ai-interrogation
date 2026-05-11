@@ -48,36 +48,51 @@ export function ChatMessage({ suspectId, messageId, isLatestAssistant }: ChatMes
 	return (
 		<div
 			className={cn(
-				'flex w-full items-end gap-2',
+				'flex w-full',
 				isUser ? 'justify-end' : 'justify-start'
 			)}
 		>
+			{/*
+			 * Bubble + Skip live in a column wrapper so Skip sits below the
+			 * bubble's bottom-left, anchored to that corner regardless of how the
+			 * bubble's width changes as the typewriter fills in chars. The
+			 * `max-w-[80%]` moved up here so the column (not the bubble) is the
+			 * width-bounded element. Task 8 sensory QA: Skip used to migrate
+			 * horizontally as the bubble grew while wrapping wasn't yet hit.
+			 */}
 			<div
 				className={cn(
-					'max-w-[80%] whitespace-pre-wrap rounded-2xl px-4 py-2 text-sm leading-relaxed',
-					isUser
-						? 'bg-primary font-sans text-primary-foreground'
-						: 'bg-muted font-mono text-foreground'
+					'flex max-w-[80%] flex-col gap-1',
+					isUser ? 'items-end' : 'items-start'
 				)}
 			>
-				{showTypingIndicator ? (
-					<TypingIndicator />
-				) : isAssistant && isLatestAssistant ? (
-					<JitteringText nervousness={nervousness}>{renderedContent}</JitteringText>
-				) : (
-					renderedContent
+				<div
+					className={cn(
+						'whitespace-pre-wrap rounded-2xl px-4 py-2 text-sm leading-relaxed',
+						isUser
+							? 'bg-primary font-sans text-primary-foreground'
+							: 'bg-muted font-mono text-foreground'
+					)}
+				>
+					{showTypingIndicator ? (
+						<TypingIndicator />
+					) : isAssistant && isLatestAssistant ? (
+						<JitteringText nervousness={nervousness}>{renderedContent}</JitteringText>
+					) : (
+						renderedContent
+					)}
+				</div>
+
+				{showSkip && (
+					<button
+						type="button"
+						onClick={() => skipTypewriter(suspectId, messageId)}
+						className="rounded-md border border-border/60 bg-transparent px-3 py-1.5 text-sm font-sans text-muted-foreground transition-colors hover:border-accent/60 hover:text-accent"
+					>
+						Skip
+					</button>
 				)}
 			</div>
-
-			{showSkip && (
-				<button
-					type="button"
-					onClick={() => skipTypewriter(suspectId, messageId)}
-					className="self-end rounded-md border border-border/60 bg-transparent px-2 py-1 text-xs font-sans text-muted-foreground transition-colors hover:border-accent/60 hover:text-accent"
-				>
-					Skip
-				</button>
-			)}
 		</div>
 	)
 }

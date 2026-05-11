@@ -136,6 +136,16 @@
 	html {
 		@apply font-sans;
 	}
+	/*
+	 * Tailwind v4's preflight no longer applies `cursor: pointer` to buttons.
+	 * Restore it globally for all non-disabled, non-pointer-events-none buttons
+	 * and ARIA-button-role'd elements. `:disabled` and `[aria-disabled=true]`
+	 * keep the default arrow cursor so the affordance is honest.
+	 */
+	button:not(:disabled):not([aria-disabled='true']),
+	[role='button']:not(:disabled):not([aria-disabled='true']) {
+		cursor: pointer;
+	}
 }
 
 /*
