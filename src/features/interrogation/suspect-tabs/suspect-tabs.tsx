@@ -8,14 +8,25 @@ interface SuspectTabsProps {
 	suspects: PublicSuspect[]
 	activeSuspectId: string
 	onSelect: (suspectId: string) => void
+	/** Optional extra classes — `InvestigationScreen` passes `flex-1` so the
+	 *  tabs share the header row with the inline Accuse button. */
+	className?: string
 }
 
-export function SuspectTabs({ suspects, activeSuspectId, onSelect }: SuspectTabsProps) {
+export function SuspectTabs({
+	suspects,
+	activeSuspectId,
+	onSelect,
+	className
+}: SuspectTabsProps) {
 	return (
 		<div
 			role="tablist"
 			aria-label="Suspects"
-			className="flex w-full items-stretch gap-2 border-b border-border bg-background px-6"
+			className={cn(
+				'flex items-stretch gap-2 bg-background px-6',
+				className
+			)}
 		>
 			{suspects.map((suspect) => {
 				const isActive = suspect.id === activeSuspectId

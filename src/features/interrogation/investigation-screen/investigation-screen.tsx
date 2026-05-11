@@ -11,6 +11,12 @@ interface InvestigationScreenProps {
 	onAccuse: () => void
 }
 
+/**
+ * Three-row layout: fixed header (suspect tabs + Accuse), scrollable middle
+ * (chat), fixed footer (message input). `h-screen` constrains the document so
+ * only the chat region scrolls — Task 8 sensory QA: previously the whole page
+ * scrolled, which buried the suspect tabs as soon as a few exchanges landed.
+ */
 export function InvestigationScreen({ kase, onAccuse }: InvestigationScreenProps) {
 	const setActiveSuspect = useGameStore((state) => state.setActiveSuspect)
 	const storedActiveSuspectId = useGameStore(
@@ -24,14 +30,19 @@ export function InvestigationScreen({ kase, onAccuse }: InvestigationScreenProps
 	}
 
 	return (
-		<div className="flex min-h-screen flex-col">
-			<SuspectTabs
-				suspects={kase.suspects}
-				activeSuspectId={activeSuspect.id}
-				onSelect={setActiveSuspect}
-			/>
+		<div className="flex h-screen flex-col">
+			<header className="flex shrink-0 items-stretch gap-2 border-b border-border bg-background pr-4">
+				<SuspectTabs
+					suspects={kase.suspects}
+					activeSuspectId={activeSuspect.id}
+					onSelect={setActiveSuspect}
+					className="flex-1"
+				/>
+				<div className="flex shrink-0 items-center py-2">
+					<AccuseButton onClick={onAccuse} />
+				</div>
+			</header>
 			<InterrogationRoom suspect={activeSuspect} caseId={kase.id} />
-			<AccuseButton onClick={onAccuse} />
 		</div>
 	)
 }
