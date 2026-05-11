@@ -193,8 +193,25 @@
 	.jitter-low,
 	.jitter-mid,
 	.jitter-high {
-		animation: none;
+		animation: none !important;
 	}
+}
+
+/*
+ * Explicit Reduce Motion toggle (spec §7.6 / Task 7). When the user opts out
+ * via the toggle on the Briefing screen, `<MotionToggle>` adds the
+ * `.reduce-motion` class to `<html>`; this override mirrors the
+ * `prefers-reduced-motion` rule so jitter stops regardless of the OS setting.
+ * `!important` is required — spec §7.6 literally suggests it, and Tailwind v4's
+ * layering can otherwise let the `.jitter-*` `animation` shorthand outweigh
+ * the override depending on emission order. Modal scale-in (Motion library)
+ * intentionally stays enabled — it's a one-shot punctuation animation, not an
+ * ambient effect, per ADR-0017.
+ */
+.reduce-motion .jitter-low,
+.reduce-motion .jitter-mid,
+.reduce-motion .jitter-high {
+	animation: none !important;
 }
 
 @keyframes dot-pulse {

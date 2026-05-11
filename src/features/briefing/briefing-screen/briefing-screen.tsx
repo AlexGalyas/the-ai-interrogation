@@ -1,3 +1,5 @@
+import { AudioToggle } from '@/components/audio-toggle'
+import { MotionToggle } from '@/components/motion-toggle'
 import { Button } from '@/components/ui/button'
 import { SuspectCard } from '@/features/briefing/suspect-card'
 import type { PublicCase } from '@/lib/game/types'
@@ -43,6 +45,11 @@ export function BriefingScreen({ kase, onBegin }: BriefingScreenProps) {
 				<Button onClick={onBegin} size="lg" className="w-full min-w-[240px] md:w-auto">
 					Begin investigation
 				</Button>
+			</div>
+
+			<div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1">
+				<AudioToggle />
+				<MotionToggle />
 			</div>
 		</div>
 	)

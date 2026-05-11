@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 
+import { AudioController } from '@/components/audio-controller'
 import { AccusationModal } from '@/features/accusation/accusation-modal'
 import { BriefingScreen } from '@/features/briefing/briefing-screen'
 import { InvestigationScreen } from '@/features/interrogation/investigation-screen'
@@ -47,6 +48,7 @@ export function GameRoot({ kase }: GameRootProps) {
 				open={accusationOpen}
 				onOpenChange={setAccusationOpen}
 			/>
+			<AudioController caseId={kase.id} />
 		</>
 	)
 }
